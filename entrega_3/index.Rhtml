@@ -1,0 +1,315 @@
+<!DOCTYPE HTML>
+<html lang="es">
+
+<head>
+	<title>Entrega 3</title>
+	<meta charset="UTF-8"/>
+	<link rel="icon" type="image/png" href="resources/images/icon.png"/>
+	<link rel="stylesheet" type="text/css" href="resources/css/style.css" />
+	<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.0.1/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+		<header>
+			<section id="texto">
+				<h1>Estadística Computacional: <span id="entrega">Entrega 3</span></h1>
+				<h3>Representación Gráfica de Datos</h3>
+			</section>
+			<section id="ugr">
+				<img id="logo_ugr" src="./resources/images/ugr.png" alt="UGR">
+			</section>
+		</header>
+
+		<section id="wrapper">
+			<section id="content">
+				<article id="introduccion">
+					<h2>Introducción</h2>
+					<p>En esta entrega nos disponemos a entender y utilizar las distintas opciones de representación gráfica que nos proporciona R. Para ello, vamos a utilizar una biblioteca que nos proporcionará una gran variedad de conjuntos de datos, con los que podremos trabajar estudiando gráficamente sus distintas propiedades. Para ello, la cargaremos con la siguiente orden:</p>
+					<p>
+					<!--begin.rcode
+					library(datasets)
+					end.rcode-->
+					</p>
+					<p>¿Cuántos conjuntos de datos nos proporciona? Muchos, entre ellos el dataset más utilizado para ejemplos en ciencia de datos, <code>iris</code>. Podemos ver todos de la siguiente manera:</p>
+					<p>
+					<!--begin.rcode
+					# Realmente este código muestra la información por terminal, así que
+					# escribiremos el resultado entre comentarios
+					
+					library(help="datasets")
+					
+					# AirPassengers           Monthly Airline Passenger Numbers 1949-1960
+					# BJsales                 Sales Data with Leading Indicator
+					# BOD                     Biochemical Oxygen Demand
+					# CO2                     Carbon Dioxide Uptake in Grass Plants
+					# ChickWeight             Weight versus age of chicks on different diets
+					# DNase                   Elisa assay of DNase
+					# EuStockMarkets          Daily Closing Prices of Major European Stock
+					#                         Indices, 1991-1998
+					# Formaldehyde            Determination of Formaldehyde
+					# HairEyeColor            Hair and Eye Color of Statistics Students
+					# Harman23.cor            Harman Example 2.3
+					# Harman74.cor            Harman Example 7.4
+					# [...]
+					# iris                    Edgar Anderson's Iris Data
+					# islands                 Areas of the World's Major Landmasses
+					# lh                      Luteinizing Hormone in Blood Samples
+					# [...]
+					end.rcode-->
+					</p>
+					<p>Con esto, comencemos nuestro trabajo.</p>
+				</article>
+				
+				<article id="plot_text_symbols">
+					<h2>Funciones <code>plot, text</code> y <code>symbols</code></h2>
+					<p>Comenzaremos estudiando y representando estas tres funciones en un mismo gráfico, pues pueden ser usadas de manera complementaria. La primera de ellas es la función <code>plot</code>, una función simple que se encarga de generar un gráfico del conjunto de datos que le pasemos. Llamando a la función sin parámetros obtenemos una representación muy básica, por la que añadiremos unos cuantos parámetros para darle color, así como nombres a los ejes, etc.</p>
+					<p>
+					<!--begin.rcode fig.align='center'
+					# Definimos una curva a representar
+					lemniscata <- function(t){
+					   return(
+					      list(
+					         x=3*sin(t)/(1+cos(t)^2),
+					         y=3*sin(t)*cos(t)/(1+cos(t)^2)
+					      )
+					   )
+					}
+					
+					# Definimos los puntos en los que evaluar la curva
+					t=seq(0,2*pi, by=pi/50)
+					
+					# Dibujamos la gráfica, uniendo los puntos por líneas, y dándole color rojo
+					plot(lemniscata(t)$x, lemniscata(t)$y, type="l", col="red", xlab="x", ylab="y")
+					end.rcode-->
+					</p>
+					
+					<p>Con esta función también podremos representar gráficas de puntos, y en el caso de que tengamos un conjunto de datos con varios atributos, una matriz de gráficas de puntos, también llamada <i>scatter matrix</i>.</p>
+					
+					<p>
+					<!--begin.rcode fig.align='center'
+					# Seleccionamos los atributos que queremos representar
+					library(dplyr)
+					iris_plot <- select(iris, "Sepal.Length", "Petal.Length", "Sepal.Width", "Petal.Width")
+					
+					# Imprimimos por pantalla la matriz de gráficas de puntos, dándole un color a cada atributo
+					plot(iris_plot,col=c("red","blue","orange","green"), pch=19,
+					     labels=c("Longitud sépalo","Longitud pétalo","Ancho sépalo","Ancho pétalo"))
+					end.rcode--> 
+					</p>
+					
+					<p>Visto esto, pasemos a la función <code>text</code>, que añade texto a un gráfico ya existente. Esta función es de gran uso para diferenciar diferentes elementos en una misma gráfica, y de esta manera la utilizaremos para nombrar en una gráfica una lemniscata y la función coseno.</p>
+					<p>
+					<!--begin.rcode fig.align='center'
+					# Comenzamos definiendo lo que vamos a representar por pantalla
+					plot(lemniscata(t)$x, lemniscata(t)$y, type="l", col="red", xlab="x", ylab="y", ylim=c(-1,1.5))
+					lines(x=seq(-2*pi,2*pi, by=0.05), y=cos(seq(-2*pi,2*pi, by=0.05)), col="blue")
+					
+					# Ahora, añadimos el texto
+					text(x=2, y=1.3, labels=c("lemniscata\n", "\ncos(t)"), col=c("red","blue"), cex=1.5)
+					end.rcode-->
+					</p>
+					
+					<p>Por último, disponemos de la función <code>symbols</code>, que nos permitirá dibujar una gran cantidad de figuras como círculos, estrellas, cuadrados, etc. Admitirá como parámetros la posición determinada de estos objetos, su color o su tamaño entre muchos otros valores. Realmente no imagino qué utilidad puede tener salvo representar alguna figura sobre una función o una gráfica de puntos.</p>
+				</article>
+							
+				<article id="hist_curve">
+					<h2>Funciones <code>hist</code> y <code>curve</code></h2>
+					<p>La función <code>hist</code>, que ya utilizamos en la entrega anterior, genera y devuelve un histograma de los datos que le pasemos por parámetro, de manera que podamos ver más facilmente la distribución de nuestros datos. En este caso, veamos la distribución del conjunto de datos <code>cars</code>, que contendrá la velocidad y la distancia de frenado de distintos coches. Para acceder a cada uno de sus atributos, utilizaremos <code>cars$speed</code> y <code>cars$dist</code>. Le daremos algo de color a cada histograma para que no quede muy simple.</p>
+					
+					<p>
+					<!--begin.rcode fig.align='center'
+					hist(x=cars$speed, main="Histograma Velocidad", breaks=10, col="red",
+					     xlab="Velocidad", ylab="Frecuencia", density=50)
+					hist(x=cars$dist, main="Histograma Distancia", breaks=10, col="green",
+					     xlab="Distancia", ylab="Frecuencia", density=50)
+					
+					end.rcode-->
+					</p>
+					
+					<p>Por otra parte, tenemos el método <code>curve</code>, que representará una curva en una gráfica que mostrará por pantalla. La diferencia de este método con <code>plot</code> es que <code>plot</code> puede representar cualquier dato que le pasemos (numérico) mientras que <code>curve</code> es específco para representación de funciones. Además, con el parámetro <code>add</code> podremos añadir cualquier nueva función al gráfico ya generado previamente.</p>
+					
+					<p>
+					<!--begin.rcode fig.align='center'
+					curve(log(x)*sin(3*x), 0, 10, col="red", xlim=c(-10,10),
+					      xlab="x", ylab="y", main="Representación de curvas")
+					curve((x^3-3*x)/(3*x^2+1), -10, 10, col="green", add=TRUE)
+					
+					text(x=-5, y=1.5, labels=c("log(x)*sin(3*x)\n\n", "\n(x^3-3*x)/(3*x^2+1)"),
+					     col=c("red","green"), cex=1.5)
+					end.rcode-->
+					</p>
+				</article>
+				
+				
+				<article id="polygon_lines_points">
+					<h2>Funciones <code>polygon</code>, <code>lines</code> y <code>points</code></h2>
+					<p>Las tres funciones que vamos a tratar en este apartado se encargan de dibujar sobre un gráfico ya existente, es decir, añaden nueva información a la gráfica representada previamente como hacía, por ejemplo, la función <code>text</code>. La primera de ellas, <code>polygon</code>, dibuja polígonos definidos por sus vértices en un gráfico ya existente. Tiene una funcionalidad similar a la que tiene <code>symbols</code>, pero dando más libertad para dibujar la figura deseada.</p>
+					<p>
+					<!--begin.rcode fig.align='center'
+					curve(sin(x), -2*pi, 2*pi, col="blue", ylab="y")
+					
+					polygon(x=c(-6.3,-0.1,-0.1,-pi), y=c(0,0,-1,-1),density=10,col="orange")
+					polygon(x=c(0.1,pi,6.3,0.1), y=c(1,1,0,0),density=10,col="green")
+					end.rcode-->
+					</p>
+					<p>Las funciones <code>lines</code> y <code>points</code> tendrán el mismo funcionamiento que <code>plot(type="l")</code> y <code>plot(type="p")</code> respectivamente, pero en vez de generar un nuevo gráfico añadirán a uno ya existente. Aunque ya la hemos utilizado anteriormente para dibujar la lemniscata y el coseno, veamos algún otro ejemplo.</p>
+					<p>
+					<!-- begin.rcode fig.align='center'
+					t=seq(-10,10,by=0.25)
+					
+					# El valor type="o" significa que se representa por líneas y puntos
+					plot(x=t,y=t^2,col="red", type="o", ylab="y", ylim=c(-100,100))
+					lines(x=t,y=t^3,col="blue")
+					points(x=t,y=t^4,col="green")
+					end.rcode-->
+					</p>
+				</article>
+				
+				<article id="barplot_boxplot">
+					<h2>Funciones <code>barplot</code> y <code>boxplot</code></h2>
+					<p>La primera de estas funciones, <code>barplot</code>, genera gráficos de barras de maneras muy diversas. Para el ejemplo que vamos a realizar, utilizaremos el conjunto de datos <code>mtcars</code>, que contendrá información sobre las pruebas de distintos motores de coche en carretera. Para hacer un gráfico más visible, mostraremos la relación entre el tipo de motor (forma de V o recto) y el número de marchas.</p>
+					<p>
+					<!--begin.rcode fig.align='center'
+					barplot(height=table(mtcars$vs, mtcars$gear), col=c("green","yellow"), density=50,
+					main="Comparación entre\nNúmero de Marchas y tipo de motor", xlab="Número de marchas",
+					legend=c("tipo motor","numero marchas"))
+					end.rcode-->
+					</p>
+					<p>La función <code>boxplot</code> ya la utilizamos en la práctica anterior, y representaun gráfico de caja en el que aparecen datos como la media, los cuartiles o los valores extremos. Veamos el gráfico de la práctica pasada.</p>
+					<p>
+					<!--begin.rcode fig.align='center'
+					datos2 <- read.csv("./resources/data/Datos2.txt", header=TRUE, sep=" ")
+					datos2$Altura=datos2$Altura*100
+
+					boxplot(select(datos2, "Peso", "Altura", "Edad"), main="Diagrama de caja para Datos2.txt",
+					col=c("red","yellow","green"))
+					end.rcode-->
+					</p>
+					
+				</article>
+				<article id="pairs_multiple">
+					<h2>Función <code>pairs</code> y gráficos múltiples</h2>
+					<p>En este apartado estudiamos función <code>pairs</code>, con la que podremos representar todos los diagramas de dispersión de un dataset con varias variables, más o menos como hicimos con la función <code>plot</code> y el dataset <code>iris</code>. Probemos con este mismo dataset de nuevo, pero mostrando también un histograma de cada atributo.</p>
+					<p>
+					<!--begin.rcode fig.align='center'
+					panel.hist <- function(x, ...)
+					{
+					   usr <- par("usr"); on.exit(par(usr))
+					   par(usr = c(usr[1:2], 0, 1.5) )
+					   h <- hist(x, plot = FALSE)
+					   breaks <- h$breaks; nB <- length(breaks)
+					   y <- h$counts; y <- y/max(y)
+					   rect(breaks[-nB], 0, breaks[-1], y, ...)
+					}
+					
+					pairs(iris_plot, pch=19, diag.panel=panel.hist,col=c("red","blue","orange","green"),
+					      labels=c("Longitud sépalo","Longitud pétalo","Ancho sépalo","Ancho pétalo"))
+					end.rcode-->
+					</p>
+					
+					<p>Con los argumentos <code>mfrow</code> y <code>mfcol</code> de la función <code>par</code> podemos separar nuestro dispositivo de impresión en distintas partes, para así representar varias gráficas en una misma imagen. Son métodos muy prácticos para representar información sobre un dataset de manera muy visual.</p>
+					<p>
+					<!--begin.rcode fig.align='center'
+					par(mfrow=c(1,3))
+					hist(trees$Girth,col="green",density=50)
+					hist(trees$Height,col="yellow",density=50)
+					hist(trees$Volume,col="red",density=50)
+					end.rcode-->
+					</p>
+				</article>
+				
+				<article id="sectores_estrellas">
+					<h2>Diagramas de Sectores y de Estrellas</h2>
+					<p>Veamos ahora los diagramas de sectores, o de <i>tarta</i>, de ahí el nombre de la función para representarlos, <code>pie</code>. Volvamos al dataset de los motores de coches, y esta vez veamos el número de carburadores, para ver cuál de los valores se da con más y menos frecuencia.</p>
+					<p>
+					<!--begin.rcode fig.align='center'
+					pie(table(mtcars$carb), main="Número de carburadores",
+					    col=c("green","red","orange","blue","pink","yellow"),density=50)
+					end.rcode-->
+					</p>
+					<p>Por otra parte, el diagrama de estrellas realiza un diagrama en el que muestra la información de todas las variables, con el fin de poder compararlas entre ellas. En este caso, utilicemos el dataset <code>iris</code> que solo tienen 4 atributos y así tendremos una representación decente para entender este tipo de diagramas.</p>
+					
+					<p>
+					<!--begin.rcode fig.align='center'
+					stars(iris_plot, col.segments=c("red","blue","orange","green"),
+					      draw.segments=TRUE, key.loc = c(20, 1))
+					end.rcode-->
+					</p>
+				</article>
+				
+				<article id="tridimensional">
+					<h2>Representaciones Tridimensionales</h2>
+					<p>Para finalizar esta entrega, veamos distintos métodos de representación en tres dimensiones. Empecemos por la función <code>persp</code>, ya utilizada en la práctica anterior.</p>
+					
+					<p>
+					<!--begin.rcode fig.align='center'
+					f=function(x, y){
+					   r = sqrt(x^2+y^2)
+					   return(10 * sin(r)/r)
+					}
+					
+					s=seq(-10, 10, by=0.5)
+					t=s
+					
+					persp(x=s, y=t, z=outer(s, t, f), theta = 30, phi = 30, col = "orange")
+					end.rcode-->
+					</p>
+					
+					<p>Con la función <code>contour</code> realizaremos un mapa de nivel. Utilizaremos el dataset <code>volcano</code>, que almacena los valores de la altitud del volcán Maunga Whau.</p>
+					<p>
+					<!--begin.rcode fig.align='center'
+					rx <- range(x <- 10*1:nrow(volcano))
+					ry <- range(y <- 10*1:ncol(volcano))
+					ry <- ry + c(-1, 1) * (diff(rx) - diff(ry))/2
+					
+					tcol <- terrain.colors(12)
+					plot(x = 0, y = 0, type = "n", xlim = rx, ylim = ry, xlab = "", ylab = "")
+					u <- par("usr")
+					rect(u[1], u[3], u[2], u[4], col = tcol[8], border = "red")
+					
+					contour(x, y, volcano, col = tcol[2], lty = "solid", add = TRUE,
+							vfont = c("sans serif", "plain"))
+					
+					title("Mapa Topográfico del Volcán Maunga Whau", font = 4)
+					end.rcode-->
+					</p>
+					
+					<p>Finalmente, tendremos la función <code>image</code>, que se encarga de dibujar una gráfica con código de color o de escala de grises.</p>
+				</article>
+				
+				<p style="text-align:center;"><br><br><br><br>FIN</p>
+				
+			</section>
+		</section>
+		
+		
+		
+		<nav>
+			<p><strong>Índice</strong></p>
+			<ul>
+				<li><a href="#introduccion">Introducción</a></li>
+				<li><a href="#plot_text_symbols"><code>plot</code>, <code>text</code> y <code>symbols</code></a></li>
+				<li><a href="#hist_curve"><code>hist</code> y <code>curve</code></a></li>
+				<li><a href="#polygon_lines_points"><code>polygon</code>, <code>lines</code> y <code>points</code></a></li>
+				<li><a href="#barplot_boxplot"><code>barplot</code> y <code>boxplot</code></a></li>
+				<li><a href="#pairs_multiple"><code>pairs</code> y gráficos múltiples</a></li>
+				<li><a href="#sectores_estrella">Diagramas Sectores y Estrella</a></li>
+				<li><a href="#tridimensional">Representaciones Tridimensionales</a></li>
+			</ul>
+		</nav>
+	
+		<section id="extra">
+			<p><strong>Simón López Vico</strong></p>
+			<p>Universidad de Granada</p>
+			<p>Ingeniería Informática y Matemáticas</p>
+		</section>
+		
+		<footer>
+			<p>Simón López Vico</p>
+			<p>simondelosbros@correo.ugr.es</p>
+		</footer>
+	
+</body>
+
+</html>

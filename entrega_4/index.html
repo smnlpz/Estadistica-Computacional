@@ -1,0 +1,583 @@
+<!DOCTYPE HTML>
+<html lang="es">
+
+<head>
+<style type="text/css">
+.inline {
+  background-color: #f7f7f7;
+  border:solid 1px #B0B0B0;
+}
+.error {
+	font-weight: bold;
+	color: #FF0000;
+}
+.warning {
+	font-weight: bold;
+}
+.message {
+	font-style: italic;
+}
+.source, .output, .warning, .error, .message {
+	padding: 0 1em;
+  border:solid 1px #F7F7F7;
+}
+.source {
+  background-color: #f5f5f5;
+}
+.left {
+  text-align: left;
+}
+.right {
+  text-align: right;
+}
+.center {
+  text-align: center;
+}
+.hl.num {
+  color: #AF0F91;
+}
+.hl.str {
+  color: #317ECC;
+}
+.hl.com {
+  color: #AD95AF;
+  font-style: italic;
+}
+.hl.opt {
+  color: #000000;
+}
+.hl.std {
+  color: #585858;
+}
+.hl.kwa {
+  color: #295F94;
+  font-weight: bold;
+}
+.hl.kwb {
+  color: #B05A65;
+}
+.hl.kwc {
+  color: #55aa55;
+}
+.hl.kwd {
+  color: #BC5A65;
+  font-weight: bold;
+}
+</style>
+	<title>Entrega 4</title>
+	<meta charset="UTF-8"/>
+	<link rel="icon" type="image/png" href="resources/images/icon.png"/>
+	<link rel="stylesheet" type="text/css" href="resources/css/style.css" />
+	<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.0.1/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+		<header>
+			<section id="texto">
+				<h1>Estadística Computacional: <span id="entrega">Entrega 4</span></h1>
+				<h3>Representación Gráfica de Datos</h3>
+			</section>
+			<section id="ugr">
+				<img id="logo_ugr" src="./resources/images/ugr.png" alt="UGR">
+			</section>
+		</header>
+
+		<section id="wrapper">
+			<section id="content">
+				<article>
+					<ol>
+						<li id="ej_1">
+						<p class="pregunta">Busca <code>qunif</code> y <code>dunif</code> y representa las funciones correspondientes para la unifirme entre 0 y 1. <br><code>?Distributions</code> muestra todas las distribuciones que existen en R. Selecciona una y represéntala.<p>
+						<p>Hemos escrito y mejorado la función <code>Dibuja</code> que aparece en el punto 7.1 para que represente la distribución uniforme, \(U(a,b)\). De manera similar desarrollaremos una función para una distribución diferente y representaremos su función de densidad así como la distribución de probabilidad.</p>
+						<p>Hablemos de las funciones que nos pide el ejercicio detenidamente. El método <code>qunif(x,min=0,max=1)</code> nos devolverá la función cuantil, \(P[X\leq x]\), en el intervalo \([\)min, max\(]\) para la distribución uniforme. Por otra parte, la función <code>dunif(x,min=0,max=1)</code> nos devolverá la densidad del valor \(x\) en \(U(a,b)\), donde \(a\) y \(b\) son el mínimo el máximo especificados en los parámetros. En la función desarrollada también utilizaremos <code>punif(x,min=0,max=1)</code>, que devolverá el valor de la función de distribución de probabilidad.</p>
+						<p>Hablemos ahora de la función desarrollada para representar la distribución uniforme. En los parámetros especificaremos el valor de el número de elementos (<code>n</code>), la cantidad que difieren \(a\) y \(b\) (<code>alpha</code>), el mínimo y el máximo de la distribución (<code>mini, maxi</code>), el número de gráficas a representar (<code>fil, col</code>) y si representamos la función de densidad o de distribución de probabilidad (<code>probability=TRUE / FALSE</code>). Dentro de ella comprobaremos que todos estos parámetros están bien especificados y mostraremos, de forma bonita, las gráficas.</p>
+						<p>El enunciado del ejercicio pide que se muestren las funciones en el intervalor \([0,1]\), que es lo que hará la función cuando la ejecutemos sin parámetros. Para ver un funcionamiento más complejo, la ejecutaremos con otros parámetros diferentes.</p>
+						
+						<p>
+						
+						</p>
+						
+						<p>
+<div class="chunk" id="unnamed-chunk-2"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl std">plotDistribution.Uniform</span> <span class="hl kwb">&lt;-</span> <span class="hl kwa">function</span><span class="hl std">(</span><span class="hl kwc">n</span><span class="hl std">=</span><span class="hl num">30</span><span class="hl std">,</span><span class="hl kwc">alpha</span><span class="hl std">=</span><span class="hl num">0.001</span><span class="hl std">,</span><span class="hl kwc">mini</span><span class="hl std">=</span><span class="hl num">0</span><span class="hl std">,</span><span class="hl kwc">maxi</span><span class="hl std">=</span><span class="hl num">1</span><span class="hl std">,</span>
+                                     <span class="hl kwc">fil</span><span class="hl std">=</span><span class="hl num">2</span><span class="hl std">,</span><span class="hl kwc">col</span><span class="hl std">=</span><span class="hl num">2</span><span class="hl std">,</span><span class="hl kwc">probability</span><span class="hl std">=</span><span class="hl num">FALSE</span><span class="hl std">){</span>
+   <span class="hl kwa">if</span><span class="hl std">(n</span><span class="hl opt">&lt;</span><span class="hl num">10</span><span class="hl std">)</span>
+      <span class="hl kwd">stop</span><span class="hl std">(</span><span class="hl str">&quot;Hacen falta mas numeros&quot;</span><span class="hl std">)</span>
+
+   <span class="hl kwa">if</span><span class="hl std">(maxi</span><span class="hl opt">&lt;=</span><span class="hl std">mini)</span>
+      <span class="hl kwd">stop</span><span class="hl std">(</span><span class="hl str">&quot;El mínimo ha de ser menor que el máximo&quot;</span><span class="hl std">)</span>
+
+   <span class="hl kwa">if</span><span class="hl std">(alpha</span><span class="hl opt">&gt;</span><span class="hl num">0.5</span><span class="hl std">)</span>
+      <span class="hl kwd">stop</span><span class="hl std">(</span><span class="hl str">&quot;El máximo valor para alpha es 0.5&quot;</span><span class="hl std">)</span>
+
+   <span class="hl std">n</span><span class="hl kwb">&lt;-</span><span class="hl kwd">as.integer</span><span class="hl std">(n)</span>
+   <span class="hl std">a</span><span class="hl kwb">&lt;-</span><span class="hl kwd">qunif</span><span class="hl std">(alpha,</span> <span class="hl kwc">min</span><span class="hl std">=mini,</span> <span class="hl kwc">max</span><span class="hl std">=maxi)</span>
+   <span class="hl std">b</span><span class="hl kwb">&lt;-</span><span class="hl kwd">qunif</span><span class="hl std">(</span><span class="hl num">1</span><span class="hl opt">-</span><span class="hl std">alpha,</span> <span class="hl kwc">min</span><span class="hl std">=mini,</span> <span class="hl kwc">max</span><span class="hl std">=maxi)</span>
+   <span class="hl std">colors</span><span class="hl kwb">=</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl str">&quot;firebrick1&quot;</span><span class="hl std">,</span><span class="hl str">&quot;chartreuse1&quot;</span><span class="hl std">,</span><span class="hl str">&quot;cornflowerblue&quot;</span><span class="hl std">,</span><span class="hl str">&quot;darkorchid2&quot;</span><span class="hl std">)</span>
+
+   <span class="hl kwa">if</span><span class="hl std">(</span><span class="hl opt">!</span><span class="hl std">probability){</span>
+      <span class="hl kwd">par</span><span class="hl std">(</span><span class="hl kwc">mfrow</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(fil,col))</span>
+      <span class="hl kwa">for</span> <span class="hl std">(i</span> <span class="hl kwa">in</span> <span class="hl num">1</span><span class="hl opt">:</span><span class="hl std">(fil</span><span class="hl opt">*</span><span class="hl std">col)){</span>
+         <span class="hl std">x</span><span class="hl kwb">&lt;-</span><span class="hl kwd">seq</span><span class="hl std">(a,b,,i</span><span class="hl opt">*</span><span class="hl std">n)</span>
+         <span class="hl kwd">plot</span><span class="hl std">(x,</span><span class="hl kwd">dunif</span><span class="hl std">(x,</span> <span class="hl kwc">min</span><span class="hl std">=mini,</span> <span class="hl kwc">max</span><span class="hl std">=maxi),</span><span class="hl kwc">col</span><span class="hl std">=colors[i],</span>
+              <span class="hl kwc">xlim</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(mini,maxi),</span> <span class="hl kwc">ylim</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl num">0</span><span class="hl std">,</span> <span class="hl num">1.5</span><span class="hl opt">/</span><span class="hl std">(maxi</span><span class="hl opt">-</span><span class="hl std">mini)),</span>
+              <span class="hl kwc">ylab</span><span class="hl std">=</span><span class="hl str">&quot;y&quot;</span><span class="hl std">,</span> <span class="hl kwc">main</span><span class="hl std">=</span><span class="hl kwd">paste</span><span class="hl std">(</span><span class="hl str">&quot;n =&quot;</span><span class="hl std">,  i</span><span class="hl opt">*</span><span class="hl std">n,</span> <span class="hl str">&quot;&quot;</span><span class="hl std">,</span> <span class="hl kwc">sep</span><span class="hl std">=</span><span class="hl str">&quot; &quot;</span><span class="hl std">),</span> <span class="hl kwc">type</span><span class="hl std">=</span><span class="hl str">&quot;o&quot;</span><span class="hl std">)</span>
+      <span class="hl std">}</span>
+      <span class="hl kwd">title</span><span class="hl std">(</span><span class="hl kwc">main</span><span class="hl std">=</span><span class="hl str">&quot;Función de densidad\nDistribución Uniforme&quot;</span><span class="hl std">,</span> <span class="hl kwc">line</span> <span class="hl std">=</span> <span class="hl opt">-</span><span class="hl num">22</span><span class="hl std">,</span>
+            <span class="hl kwc">outer</span> <span class="hl std">=</span> <span class="hl num">TRUE</span><span class="hl std">,</span> <span class="hl kwc">cex.main</span><span class="hl std">=</span><span class="hl num">1.8</span><span class="hl std">,</span> <span class="hl kwc">col.main</span><span class="hl std">=</span><span class="hl str">&quot;gray25&quot;</span><span class="hl std">)</span>
+   <span class="hl std">}</span><span class="hl kwa">else</span><span class="hl std">{</span>
+      <span class="hl kwd">par</span><span class="hl std">(</span><span class="hl kwc">mfrow</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(fil,col))</span>
+      <span class="hl kwa">for</span> <span class="hl std">(i</span> <span class="hl kwa">in</span> <span class="hl num">1</span><span class="hl opt">:</span><span class="hl std">(fil</span><span class="hl opt">*</span><span class="hl std">col)){</span>
+         <span class="hl std">x</span><span class="hl kwb">&lt;-</span><span class="hl kwd">seq</span><span class="hl std">(a,b,,i</span><span class="hl opt">*</span><span class="hl std">n)</span>
+         <span class="hl kwd">plot</span><span class="hl std">(x,</span><span class="hl kwd">punif</span><span class="hl std">(x,</span> <span class="hl kwc">min</span><span class="hl std">=mini,</span> <span class="hl kwc">max</span><span class="hl std">=maxi),</span><span class="hl kwc">col</span><span class="hl std">=colors[i],</span>
+              <span class="hl kwc">main</span><span class="hl std">=</span><span class="hl kwd">paste</span><span class="hl std">(</span><span class="hl str">&quot;n =&quot;</span><span class="hl std">, i</span><span class="hl opt">*</span><span class="hl std">n,</span> <span class="hl str">&quot;&quot;</span><span class="hl std">,</span> <span class="hl kwc">sep</span><span class="hl std">=</span><span class="hl str">&quot; &quot;</span><span class="hl std">),</span> <span class="hl kwc">ylab</span><span class="hl std">=</span><span class="hl str">&quot;y&quot;</span><span class="hl std">,</span><span class="hl kwc">type</span><span class="hl std">=</span><span class="hl str">&quot;o&quot;</span><span class="hl std">)</span>
+      <span class="hl std">}</span>
+      <span class="hl kwd">title</span><span class="hl std">(</span><span class="hl kwc">main</span><span class="hl std">=</span><span class="hl str">&quot;Función Distribución de Probabilidad\nDistribución Uniforme&quot;</span><span class="hl std">,</span>
+            <span class="hl kwc">line</span> <span class="hl std">=</span> <span class="hl opt">-</span><span class="hl num">23</span><span class="hl std">,</span> <span class="hl kwc">outer</span> <span class="hl std">=</span> <span class="hl num">TRUE</span><span class="hl std">,</span> <span class="hl kwc">cex.main</span><span class="hl std">=</span><span class="hl num">1.5</span><span class="hl std">,</span> <span class="hl kwc">col.main</span><span class="hl std">=</span><span class="hl str">&quot;gray25&quot;</span><span class="hl std">)</span>
+   <span class="hl std">}</span>
+<span class="hl std">}</span>
+</pre></div>
+</div></div>
+						</p>
+						<p>
+<div class="chunk" id="unnamed-chunk-3"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">plotDistribution.Uniform</span><span class="hl std">(</span><span class="hl kwc">n</span><span class="hl std">=</span><span class="hl num">10</span><span class="hl std">,</span> <span class="hl kwc">alpha</span><span class="hl std">=</span><span class="hl num">0.1</span><span class="hl std">,</span> <span class="hl kwc">mini</span><span class="hl std">=</span><span class="hl num">0</span><span class="hl std">,</span> <span class="hl kwc">max</span><span class="hl std">=</span><span class="hl num">50</span><span class="hl std">)</span>
+</pre></div>
+</div><div class="rimage center"><img src="figure/unnamed-chunk-3-1.png" title="plot of chunk unnamed-chunk-3" alt="plot of chunk unnamed-chunk-3" class="plot" /></div><div class="rcode">
+<div class="source"><pre class="knitr r"><span class="hl kwd">plotDistribution.Uniform</span><span class="hl std">(</span><span class="hl kwc">n</span><span class="hl std">=</span><span class="hl num">10</span><span class="hl std">,</span> <span class="hl kwc">alpha</span><span class="hl std">=</span><span class="hl num">0.1</span><span class="hl std">,</span> <span class="hl kwc">mini</span><span class="hl std">=</span><span class="hl num">0</span><span class="hl std">,</span> <span class="hl kwc">max</span><span class="hl std">=</span><span class="hl num">50</span><span class="hl std">,</span> <span class="hl kwc">probability</span><span class="hl std">=</span><span class="hl num">TRUE</span><span class="hl std">)</span>
+</pre></div>
+</div><div class="rimage center"><img src="figure/unnamed-chunk-3-2.png" title="plot of chunk unnamed-chunk-3" alt="plot of chunk unnamed-chunk-3" class="plot" /></div></div>
+						</p>
+						
+						<p>Entre todas las distribuciones que obtenemos al ejecutar <code>?Distributions</code> nos quedaremos, por ejemplo, con la distribución de Poisson, que representaremos utilizando <code>dpois</code> y <code>ppois</code> (en este caso no necesitaremos <code>qpois</code>. Como parámetros le pasaremos el valor \(\lambda\) de la distribución de Poisson (que se irá doblando en cada gráfica) y \(k\) que representará el número de ocurrencias del evento. Así, escribimos la función para representarla como en el caso anterior y obtenemos:</p>
+						
+						<p>
+<div class="chunk" id="unnamed-chunk-4"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl std">plotDistribution.Poisson</span> <span class="hl kwb">&lt;-</span> <span class="hl kwa">function</span><span class="hl std">(</span><span class="hl kwc">k</span><span class="hl std">=</span><span class="hl num">30</span><span class="hl std">,</span><span class="hl kwc">lambda</span><span class="hl std">=</span><span class="hl num">1</span><span class="hl std">,</span>
+                                     <span class="hl kwc">fil</span><span class="hl std">=</span><span class="hl num">2</span><span class="hl std">,</span><span class="hl kwc">col</span><span class="hl std">=</span><span class="hl num">2</span><span class="hl std">,</span><span class="hl kwc">probability</span><span class="hl std">=</span><span class="hl num">FALSE</span><span class="hl std">){</span>
+   <span class="hl kwa">if</span><span class="hl std">(lambda</span><span class="hl opt">&lt;=</span><span class="hl num">0</span><span class="hl std">)</span>
+      <span class="hl kwd">stop</span><span class="hl std">(</span><span class="hl str">&quot;lambda ha de ser positivo&quot;</span><span class="hl std">)</span>
+
+   <span class="hl std">colors</span><span class="hl kwb">=</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl str">&quot;firebrick1&quot;</span><span class="hl std">,</span><span class="hl str">&quot;chartreuse1&quot;</span><span class="hl std">,</span><span class="hl str">&quot;cornflowerblue&quot;</span><span class="hl std">,</span><span class="hl str">&quot;darkorchid2&quot;</span><span class="hl std">)</span>
+
+   <span class="hl kwa">if</span><span class="hl std">(</span><span class="hl opt">!</span><span class="hl std">probability){</span>
+      <span class="hl kwd">par</span><span class="hl std">(</span><span class="hl kwc">mfrow</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(fil,col))</span>
+      <span class="hl kwa">for</span> <span class="hl std">(i</span> <span class="hl kwa">in</span> <span class="hl num">1</span><span class="hl opt">:</span><span class="hl std">(fil</span><span class="hl opt">*</span><span class="hl std">col)){</span>
+         <span class="hl std">x</span><span class="hl kwb">&lt;-</span><span class="hl kwd">seq</span><span class="hl std">(</span><span class="hl num">0</span><span class="hl std">,k)</span>
+         <span class="hl kwd">plot</span><span class="hl std">(x,</span><span class="hl kwd">dpois</span><span class="hl std">(x,</span> <span class="hl kwc">lambda</span><span class="hl std">=lambda</span><span class="hl opt">*</span><span class="hl num">2</span><span class="hl opt">^</span><span class="hl std">(i</span><span class="hl opt">-</span><span class="hl num">1</span><span class="hl std">)),</span> <span class="hl kwc">col</span><span class="hl std">=colors[i],</span> <span class="hl kwc">xlab</span><span class="hl std">=</span><span class="hl str">&quot;k&quot;</span><span class="hl std">,</span> <span class="hl kwc">type</span><span class="hl std">=</span><span class="hl str">&quot;o&quot;</span><span class="hl std">,</span>
+              <span class="hl kwc">ylim</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl num">0</span><span class="hl std">,</span><span class="hl num">0.4</span><span class="hl std">),</span><span class="hl kwc">ylab</span><span class="hl std">=</span><span class="hl str">&quot;P[X=k]&quot;</span><span class="hl std">,</span> <span class="hl kwc">main</span><span class="hl std">=</span><span class="hl kwd">paste</span><span class="hl std">(</span><span class="hl str">&quot;lambda =&quot;</span><span class="hl std">, lambda</span><span class="hl opt">*</span><span class="hl num">2</span><span class="hl opt">^</span><span class="hl std">(i</span><span class="hl opt">-</span><span class="hl num">1</span><span class="hl std">),</span><span class="hl str">&quot;&quot;</span><span class="hl std">,</span><span class="hl kwc">sep</span><span class="hl std">=</span><span class="hl str">&quot; &quot;</span><span class="hl std">))</span>
+      <span class="hl std">}</span>
+      <span class="hl kwd">title</span><span class="hl std">(</span><span class="hl kwc">main</span><span class="hl std">=</span><span class="hl str">&quot;Función de densidad\nDistribución de Poisson&quot;</span><span class="hl std">,</span> <span class="hl kwc">line</span> <span class="hl std">=</span> <span class="hl opt">-</span><span class="hl num">22</span><span class="hl std">,</span>
+            <span class="hl kwc">outer</span> <span class="hl std">=</span> <span class="hl num">TRUE</span><span class="hl std">,</span> <span class="hl kwc">cex.main</span><span class="hl std">=</span><span class="hl num">1.8</span><span class="hl std">,</span> <span class="hl kwc">col.main</span><span class="hl std">=</span><span class="hl str">&quot;gray25&quot;</span><span class="hl std">)</span>
+   <span class="hl std">}</span><span class="hl kwa">else</span><span class="hl std">{</span>
+      <span class="hl kwd">par</span><span class="hl std">(</span><span class="hl kwc">mfrow</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(fil,col))</span>
+      <span class="hl kwa">for</span> <span class="hl std">(i</span> <span class="hl kwa">in</span> <span class="hl num">1</span><span class="hl opt">:</span><span class="hl std">(fil</span><span class="hl opt">*</span><span class="hl std">col)){</span>
+         <span class="hl std">x</span><span class="hl kwb">&lt;-</span><span class="hl kwd">seq</span><span class="hl std">(</span><span class="hl num">0</span><span class="hl std">,</span><span class="hl num">30</span><span class="hl std">)</span>
+         <span class="hl kwd">plot</span><span class="hl std">(x,</span><span class="hl kwd">ppois</span><span class="hl std">(x,</span> <span class="hl kwc">lambda</span><span class="hl std">=lambda</span><span class="hl opt">*</span><span class="hl num">2</span><span class="hl opt">^</span><span class="hl std">(i</span><span class="hl opt">-</span><span class="hl num">1</span><span class="hl std">)),</span><span class="hl kwc">col</span><span class="hl std">=colors[i],</span> <span class="hl kwc">type</span><span class="hl std">=</span><span class="hl str">&quot;o&quot;</span><span class="hl std">,</span>
+              <span class="hl kwc">main</span><span class="hl std">=</span><span class="hl kwd">paste</span><span class="hl std">(</span><span class="hl str">&quot;lambda =&quot;</span><span class="hl std">, lambda</span><span class="hl opt">*</span><span class="hl num">2</span><span class="hl opt">^</span><span class="hl std">(i</span><span class="hl opt">-</span><span class="hl num">1</span><span class="hl std">),</span> <span class="hl str">&quot;&quot;</span><span class="hl std">,</span> <span class="hl kwc">sep</span><span class="hl std">=</span><span class="hl str">&quot; &quot;</span><span class="hl std">),</span> <span class="hl kwc">ylab</span><span class="hl std">=</span><span class="hl str">&quot;y&quot;</span><span class="hl std">,</span> <span class="hl kwc">xlab</span><span class="hl std">=</span><span class="hl str">&quot;k&quot;</span><span class="hl std">)</span>
+      <span class="hl std">}</span>
+      <span class="hl kwd">title</span><span class="hl std">(</span><span class="hl kwc">main</span><span class="hl std">=</span><span class="hl str">&quot;Función Distribución de Probabilidad\nDistribución de Poisson&quot;</span><span class="hl std">,</span>
+            <span class="hl kwc">line</span> <span class="hl std">=</span> <span class="hl opt">-</span><span class="hl num">23</span><span class="hl std">,</span> <span class="hl kwc">outer</span> <span class="hl std">=</span> <span class="hl num">TRUE</span><span class="hl std">,</span> <span class="hl kwc">cex.main</span><span class="hl std">=</span><span class="hl num">1.5</span><span class="hl std">,</span> <span class="hl kwc">col.main</span><span class="hl std">=</span><span class="hl str">&quot;gray25&quot;</span><span class="hl std">)</span>
+   <span class="hl std">}</span>
+<span class="hl std">}</span>
+</pre></div>
+</div></div>
+						</p>
+						<p>
+<div class="chunk" id="unnamed-chunk-5"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">plotDistribution.Poisson</span><span class="hl std">()</span>
+</pre></div>
+</div><div class="rimage center"><img src="figure/unnamed-chunk-5-1.png" title="plot of chunk unnamed-chunk-5" alt="plot of chunk unnamed-chunk-5" class="plot" /></div><div class="rcode">
+<div class="source"><pre class="knitr r"><span class="hl kwd">plotDistribution.Poisson</span><span class="hl std">(</span><span class="hl kwc">probability</span><span class="hl std">=</span><span class="hl num">TRUE</span><span class="hl std">)</span>
+</pre></div>
+</div><div class="rimage center"><img src="figure/unnamed-chunk-5-2.png" title="plot of chunk unnamed-chunk-5" alt="plot of chunk unnamed-chunk-5" class="plot" /></div></div>
+						</p>
+						
+						<p>Con este formato de función podremos generar una representación para cada distribución, <code>plotDistribution.NOMBRE</code>, haciendo ligeros cambios en función de los párametros que admita la distribución elegida.</p>
+						
+						</li>
+						
+						
+						
+						
+						<li id="ej_2">
+						<p class="pregunta">Haz una estadística descriptiva con unos datos de tu elección, que incluya <code>summary</code>, <code>hist</code>, <code>boxplot</code>, <code>stem</code>, <code>mean</code>, <code>variance</code>, <code>median</code>, ...</p>
+						<p>Al igual que en la entrega anterior, utilicemos el paquete <code>datasets</code> para escoger el conjunto de datos sobre el que realizar nuestra estadística descriptiva. Optaremos por los datos almacenados en <code>USAccDeaths</code>, que contendrán información sobre el número de muertes en accidentes por mes en Estados Unidos en una serie de años.</p>
+						<p>
+<div class="chunk" id="unnamed-chunk-6"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">library</span><span class="hl std">(datasets)</span>
+<span class="hl std">USAccDeaths</span>
+</pre></div>
+<div class="output"><pre class="knitr r">##        Jan   Feb   Mar   Apr   May   Jun   Jul   Aug   Sep   Oct   Nov   Dec
+## 1973  9007  8106  8928  9137 10017 10826 11317 10744  9713  9938  9161  8927
+## 1974  7750  6981  8038  8422  8714  9512 10120  9823  8743  9129  8710  8680
+## 1975  8162  7306  8124  7870  9387  9556 10093  9620  8285  8466  8160  8034
+## 1976  7717  7461  7767  7925  8623  8945 10078  9179  8037  8488  7874  8647
+## 1977  7792  6957  7726  8106  8890  9299 10625  9302  8314  8850  8265  8796
+## 1978  7836  6892  7791  8192  9115  9434 10484  9827  9110  9070  8633  9240
+</pre></div>
+<div class="source"><pre class="knitr r"><span class="hl com"># Es un dataframe?</span>
+<span class="hl kwd">is.data.frame</span><span class="hl std">(USAccDeaths)</span>
+</pre></div>
+<div class="output"><pre class="knitr r">## [1] FALSE
+</pre></div>
+<div class="source"><pre class="knitr r"><span class="hl com"># Es un time series?</span>
+<span class="hl kwd">is.ts</span><span class="hl std">(USAccDeaths)</span>
+</pre></div>
+<div class="output"><pre class="knitr r">## [1] TRUE
+</pre></div>
+</div></div>
+						</p>
+						<p>Podemos ver que este conjunto de datos no está almacenado en un <code>dataframe</code>, que es lo que nos facilita la realización de una estadística descriptiva; está guardado como <code>ts</code>, <i>time series</i>. Por tanto, nos encargaremos de transformarlo en un <code>dataframe</code> y así agilizar nuestro trabajo.</p>
+						<p>
+<div class="chunk" id="unnamed-chunk-7"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl std">datos</span><span class="hl kwb">&lt;-</span><span class="hl kwd">as.data.frame</span><span class="hl std">(</span><span class="hl kwd">matrix</span><span class="hl std">(USAccDeaths,</span><span class="hl kwc">nrow</span><span class="hl std">=</span><span class="hl num">6</span><span class="hl std">,</span><span class="hl kwc">ncol</span><span class="hl std">=</span><span class="hl num">12</span><span class="hl std">))</span>
+<span class="hl kwd">colnames</span><span class="hl std">(datos)</span> <span class="hl kwb">&lt;-</span> <span class="hl kwd">c</span><span class="hl std">(</span><span class="hl str">&quot;Jan&quot;</span><span class="hl std">,</span><span class="hl str">&quot;Feb&quot;</span><span class="hl std">,</span><span class="hl str">&quot;Mar&quot;</span><span class="hl std">,</span><span class="hl str">&quot;Apr&quot;</span><span class="hl std">,</span><span class="hl str">&quot;May&quot;</span><span class="hl std">,</span><span class="hl str">&quot;Jun&quot;</span><span class="hl std">,</span><span class="hl str">&quot;Jul&quot;</span><span class="hl std">,</span><span class="hl str">&quot;Aug&quot;</span><span class="hl std">,</span><span class="hl str">&quot;Sep&quot;</span><span class="hl std">,</span><span class="hl str">&quot;Oct&quot;</span><span class="hl std">,</span><span class="hl str">&quot;Nov&quot;</span><span class="hl std">,</span><span class="hl str">&quot;Dec&quot;</span><span class="hl std">)</span>
+<span class="hl kwd">rownames</span><span class="hl std">(datos)</span> <span class="hl kwb">&lt;-</span> <span class="hl kwd">c</span><span class="hl std">(</span><span class="hl str">&quot;1973&quot;</span><span class="hl std">,</span><span class="hl str">&quot;1974&quot;</span><span class="hl std">,</span><span class="hl str">&quot;1975&quot;</span><span class="hl std">,</span><span class="hl str">&quot;1976&quot;</span><span class="hl std">,</span><span class="hl str">&quot;1977&quot;</span><span class="hl std">,</span><span class="hl str">&quot;1978&quot;</span><span class="hl std">)</span>
+
+<span class="hl com"># Es un dataframe?</span>
+<span class="hl kwd">is.data.frame</span><span class="hl std">(datos)</span>
+</pre></div>
+<div class="output"><pre class="knitr r">## [1] TRUE
+</pre></div>
+</div></div>
+						</p>
+						
+						<p>Una vez tenemos un estructura de datos de tipo <code>dataframe</code>, podemos empezar la estadística descriptiva. Primero veremos un resumen con valores mínimos y máximos, medias, etcétera, en función de los meses y en función de los años.</p>
+						
+						<p>
+<div class="chunk" id="unnamed-chunk-8"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl com"># Resumen en función de los meses</span>
+<span class="hl kwd">summary</span><span class="hl std">(datos)</span>
+</pre></div>
+<div class="output"><pre class="knitr r">##       Jan             Feb             Mar            Apr             May      
+##  Min.   : 8106   Min.   : 8927   Min.   :6981   Min.   : 8680   Min.   :7306  
+##  1st Qu.: 8948   1st Qu.: 9299   1st Qu.:7822   1st Qu.: 8718   1st Qu.:7934  
+##  Median : 9072   Median : 9826   Median :8230   Median : 8936   Median :8143  
+##  Mean   : 9337   Mean   : 9967   Mean   :8236   Mean   : 9201   Mean   :8401  
+##  3rd Qu.: 9797   3rd Qu.:10542   3rd Qu.:8641   3rd Qu.: 9650   3rd Qu.:9081  
+##  Max.   :10826   Max.   :11317   Max.   :9512   Max.   :10120   Max.   :9556  
+##       Jun             Jul            Aug             Sep            Oct       
+##  Min.   : 8034   Min.   :7461   Min.   : 7874   Min.   :6957   Min.   : 8265  
+##  1st Qu.: 8191   1st Qu.:7730   1st Qu.: 8150   1st Qu.:7742   1st Qu.: 8434  
+##  Median : 8376   Median :7846   Median : 8568   Median :7949   Median : 8823  
+##  Mean   : 8776   Mean   :8073   Mean   : 8717   Mean   :8128   Mean   : 9025  
+##  3rd Qu.: 9332   3rd Qu.:8448   3rd Qu.: 9046   3rd Qu.:8694   3rd Qu.: 9189  
+##  Max.   :10093   Max.   :8945   Max.   :10078   Max.   :9299   Max.   :10625  
+##       Nov            Dec       
+##  Min.   :6892   Min.   : 8633  
+##  1st Qu.:7802   1st Qu.: 9080  
+##  Median :8014   Median : 9175  
+##  Mean   :8210   Mean   : 9394  
+##  3rd Qu.:8884   3rd Qu.: 9680  
+##  Max.   :9434   Max.   :10484
+</pre></div>
+<div class="source"><pre class="knitr r"><span class="hl com"># Si transponemos la matrix de datos, tenemos el resumen en función de los años</span>
+<span class="hl kwd">summary</span><span class="hl std">(</span><span class="hl kwd">t</span><span class="hl std">(</span><span class="hl kwd">as.matrix</span><span class="hl std">(datos)))</span>
+</pre></div>
+<div class="output"><pre class="knitr r">##       1973            1974            1975           1976           1977      
+##  Min.   : 7717   Min.   : 6892   Min.   :7726   Min.   :7870   Min.   : 7874  
+##  1st Qu.: 7825   1st Qu.: 7225   1st Qu.:7976   1st Qu.:8170   1st Qu.: 8534  
+##  Median : 9542   Median : 8642   Median :8204   Median :8477   Median : 8712  
+##  Mean   : 9248   Mean   : 8516   Mean   :8381   Mean   :8633   Mean   : 8796  
+##  3rd Qu.:10211   3rd Qu.: 9671   3rd Qu.:8789   3rd Qu.:9085   3rd Qu.: 9126  
+##  Max.   :11317   Max.   :10744   Max.   :9713   Max.   :9938   Max.   :10017  
+##       1978      
+##  Min.   : 8034  
+##  1st Qu.: 8767  
+##  Median : 9092  
+##  Mean   : 9158  
+##  3rd Qu.: 9454  
+##  Max.   :10826
+</pre></div>
+</div></div>
+						</p>
+						
+						<p>Podemos ver que de media, entre los 6 años dados, el mes con menos muertes es julio, y el que más febrero. Aún así el valor mínimo y máximo de accidentes mortales corresponde a noviembre y febrero, respectivamente. Por otra parte, viendo el resumen en función de los años, el año con menos muertes de media es 1975 y con más muertes 1973.
+						
+						<p>Una vez vistos estos valores en función de los meses y de los años, veamos sobre el total del conjunto de datos cuál es la media, la matriz de covarianzas, etc.</p>
+						<p>
+<div class="chunk" id="unnamed-chunk-9"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">mean</span><span class="hl std">(</span><span class="hl kwd">as.matrix</span><span class="hl std">(datos))</span>
+</pre></div>
+<div class="output"><pre class="knitr r">## [1] 8788.792
+</pre></div>
+<div class="source"><pre class="knitr r"><span class="hl kwd">var</span><span class="hl std">(</span><span class="hl kwd">as.matrix</span><span class="hl std">(datos))</span>
+</pre></div>
+<div class="output"><pre class="knitr r">##           Jan       Feb       Mar       Apr       May       Jun       Jul
+## Jan  902212.6 -677788.3  794814.2 -395375.8  807316.6 -546894.5  539602.8
+## Feb -677788.3  844564.3 -659728.9  555989.9 -616724.9  767123.7 -444857.6
+## Mar  794814.2 -659728.9  748336.2 -409889.2  678309.4 -580192.9  469941.6
+## Apr -395375.8  555989.9 -409889.2  391783.0 -364302.8  534305.5 -256277.2
+## May  807316.6 -616724.9  678309.4 -364302.8  784211.4 -480542.3  493606.8
+## Jun -546894.5  767123.7 -580192.9  534305.5 -480542.3  742805.1 -355015.6
+## Jul  539602.8 -444857.6  469941.6 -256277.2  493606.8 -355015.6  335940.8
+## Aug -274280.4  625588.7 -328296.8  463286.8 -286651.6  631692.5 -209995.6
+## Sep  796595.7 -618546.5  713367.3 -367135.7  717884.5 -512981.7  480549.6
+## Oct -280193.7  682323.7 -334498.3  494680.3 -281939.5  676483.3 -222669.2
+## Nov  871757.0 -684885.6  781976.4 -410472.6  792853.4 -571865.8  527143.2
+## Dec -291710.6  532599.8 -327489.8  375664.2 -282429.8  524782.0 -214203.6
+##           Aug       Sep       Oct       Nov       Dec
+## Jan -274280.4  796595.7 -280193.7  871757.0 -291710.6
+## Feb  625588.7 -618546.5  682323.7 -684885.6  532599.8
+## Mar -328296.8  713367.3 -334498.3  781976.4 -327489.8
+## Apr  463286.8 -367135.7  494680.3 -410472.6  375664.2
+## May -286651.6  717884.5 -281939.5  792853.4 -282429.8
+## Jun  631692.5 -512981.7  676483.3 -571865.8  524782.0
+## Jul -209995.6  480549.6 -222669.2  527143.2 -214203.6
+## Aug  659231.0 -288847.3  697167.7 -335496.6  520631.0
+## Sep -288847.3  719621.9 -283914.9  792158.0 -302440.6
+## Oct  697167.7 -283914.9  760583.1 -326104.6  547238.2
+## Nov -335496.6  792158.0 -326104.6  874017.2 -346145.4
+## Dec  520631.0 -302440.6  547238.2 -346145.4  432811.6
+</pre></div>
+<div class="source"><pre class="knitr r"><span class="hl kwd">var</span><span class="hl std">(</span><span class="hl kwd">t</span><span class="hl std">(</span><span class="hl kwd">as.matrix</span><span class="hl std">(datos)))</span>
+</pre></div>
+<div class="output"><pre class="knitr r">##           1973      1974      1975      1976       1977       1978
+## 1973 1800637.7 1802347.1 627418.03 655201.66 -244620.07 -390836.36
+## 1974 1802347.1 1894221.7 659100.82 667633.77 -255964.23 -458937.36
+## 1975  627418.0  659100.8 382343.33 351999.82  104599.18   41024.27
+## 1976  655201.7  667633.8 351999.82 371835.66   54648.39    8875.00
+## 1977 -244620.1 -255964.2 104599.18  54648.39  335554.75  336601.82
+## 1978 -390836.4 -458937.4  41024.27   8875.00  336601.82  468316.36
+</pre></div>
+<div class="source"><pre class="knitr r"><span class="hl kwd">quantile</span><span class="hl std">(</span><span class="hl kwd">as.matrix</span><span class="hl std">(datos))</span>
+</pre></div>
+<div class="output"><pre class="knitr r">##       0%      25%      50%      75%     100% 
+##  6892.00  8089.00  8728.50  9323.25 11317.00
+</pre></div>
+</div></div>
+						</p>
+						<p>En este caso, la media asociada al conjunto de datos completo se obtiene calculando la media entre todas las medias de cada una de las variables. La matriz de covarianzas representa la covarianza que hay entre dos variables, y los valores de la diagonal representarán la varianza de cada una de las variables.</p>
+						
+						<p>Veamos ahora, a través de un histograma, qué valores de accidentes se dan con más frecuencia.</p>
+						<p>
+<div class="chunk" id="unnamed-chunk-10"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">hist</span><span class="hl std">(</span><span class="hl kwc">x</span><span class="hl std">=</span><span class="hl kwd">as.matrix</span><span class="hl std">(datos),</span> <span class="hl kwc">main</span><span class="hl std">=</span><span class="hl str">&quot;Histograma USAccDeaths&quot;</span><span class="hl std">,</span> <span class="hl kwc">breaks</span><span class="hl std">=</span><span class="hl num">10</span><span class="hl std">,</span> <span class="hl kwc">col</span><span class="hl std">=</span><span class="hl str">&quot;red&quot;</span><span class="hl std">,</span>
+<span class="hl kwc">xlab</span><span class="hl std">=</span><span class="hl str">&quot;Número Accidentes&quot;</span><span class="hl std">,</span> <span class="hl kwc">ylab</span><span class="hl std">=</span><span class="hl str">&quot;Frecuencia&quot;</span><span class="hl std">,</span> <span class="hl kwc">density</span><span class="hl std">=</span><span class="hl num">50</span><span class="hl std">)</span>
+</pre></div>
+</div><div class="rimage center"><img src="figure/unnamed-chunk-10-1.png" title="plot of chunk unnamed-chunk-10" alt="plot of chunk unnamed-chunk-10" class="plot" /></div></div>
+						</p>
+						
+						<p><i>Notar que el histograma es exactamente el mismo independientemente de si lo ponemos en función de los meses o de los años.</i></p>
+						
+						<p>Mediante este histograma comprobamos que la frecuencia más común de accidentes durante todos los años de los que disponemos está en torno a 8000-8500 casos. Para finalizar el trabajo con los histogramas, realicemos uno para cada año.</p>
+						
+						<p>
+						
+						</p>
+						
+						<p>
+<div class="chunk" id="unnamed-chunk-12"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl std">colores</span><span class="hl kwb">=</span><span class="hl kwd">rainbow</span><span class="hl std">(</span><span class="hl num">6</span><span class="hl std">)</span>
+<span class="hl kwd">par</span><span class="hl std">(</span><span class="hl kwc">mfrow</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl num">3</span><span class="hl std">,</span><span class="hl num">2</span><span class="hl std">))</span>
+
+<span class="hl kwa">for</span><span class="hl std">(i</span> <span class="hl kwa">in</span> <span class="hl num">1</span><span class="hl opt">:</span><span class="hl num">6</span><span class="hl std">){</span>
+   <span class="hl kwd">hist</span><span class="hl std">(</span><span class="hl kwc">x</span><span class="hl std">=</span><span class="hl kwd">as.matrix</span><span class="hl std">(</span><span class="hl kwd">slice</span><span class="hl std">(datos,</span> <span class="hl kwc">index</span><span class="hl std">=i)),</span> <span class="hl kwc">main</span><span class="hl std">=</span><span class="hl kwd">paste</span><span class="hl std">(</span><span class="hl str">&quot;Histograma&quot;</span><span class="hl std">,</span> <span class="hl num">1972</span><span class="hl opt">+</span><span class="hl std">i),</span> <span class="hl kwc">breaks</span><span class="hl std">=</span><span class="hl num">10</span><span class="hl std">,</span>
+        <span class="hl kwc">col</span><span class="hl std">=colores[i],</span> <span class="hl kwc">xlab</span><span class="hl std">=</span><span class="hl str">&quot;Número Accidentes&quot;</span><span class="hl std">,</span> <span class="hl kwc">ylab</span><span class="hl std">=</span><span class="hl str">&quot;Frecuencia&quot;</span><span class="hl std">,</span> <span class="hl kwc">density</span><span class="hl std">=</span><span class="hl num">50</span><span class="hl std">,</span>
+        <span class="hl kwc">xlim</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl num">7500</span><span class="hl std">,</span><span class="hl num">11500</span><span class="hl std">),</span><span class="hl kwc">ylim</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl num">0</span><span class="hl std">,</span><span class="hl num">4</span><span class="hl std">))</span>
+<span class="hl std">}</span>
+</pre></div>
+</div><div class="rimage center"><img src="figure/unnamed-chunk-12-1.png" title="plot of chunk unnamed-chunk-12" alt="plot of chunk unnamed-chunk-12" class="plot" /></div></div>
+						</p>
+						
+						<p>Pasemos ahora a los diagramas de caja. Realizaremos uno en función de los meses y otro en función de los años, para ver así la extensión de los datos en cada intervalo de tiempo.</p>
+						<p>
+<div class="chunk" id="unnamed-chunk-13"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">par</span><span class="hl std">(</span><span class="hl kwc">mfrow</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl num">2</span><span class="hl std">,</span><span class="hl num">1</span><span class="hl std">))</span>
+<span class="hl kwd">boxplot</span><span class="hl std">(</span><span class="hl kwc">x</span><span class="hl std">=</span><span class="hl kwd">as.matrix</span><span class="hl std">(datos),</span><span class="hl kwc">col</span><span class="hl std">=</span><span class="hl kwd">rainbow</span><span class="hl std">(</span><span class="hl num">12</span><span class="hl std">),</span> <span class="hl kwc">main</span><span class="hl std">=</span><span class="hl str">&quot;Diagrama de caja en función de los meses&quot;</span><span class="hl std">)</span>
+<span class="hl kwd">boxplot</span><span class="hl std">(</span><span class="hl kwc">x</span><span class="hl std">=</span><span class="hl kwd">t</span><span class="hl std">(</span><span class="hl kwd">as.matrix</span><span class="hl std">(datos)),</span><span class="hl kwc">col</span><span class="hl std">=</span><span class="hl kwd">rainbow</span><span class="hl std">(</span><span class="hl num">6</span><span class="hl std">),</span> <span class="hl kwc">main</span><span class="hl std">=</span><span class="hl str">&quot;Diagrama de caja en función de los años&quot;</span><span class="hl std">)</span>
+</pre></div>
+</div><div class="rimage center"><img src="figure/unnamed-chunk-13-1.png" title="plot of chunk unnamed-chunk-13" alt="plot of chunk unnamed-chunk-13" class="plot" /></div></div>
+						</p>
+						
+						<p>En estos diagramas vemos lo que ya habíamos mostrado al utilizar la función <code>summary</code>: los cuartiles, la media y los valores máximos y mínimos. Respecto a los valores atípicos, representados por un punto solitario fuera del diagrama de caja, solo tendremos uno, que se dará en 1978 con un gran número de accidentes.</p>
+						
+						<p>Con estas gráficas también podemos ver lo comentado anteriormente: el mes con más accidentes fue febrero, y el año más cástigado 1973.</p>
+						<p>Utilicemos ahora el método <code>stem</code> para calcular un diagrama de tallos y hojas. Esta representación presentará nuestros datos cuantitativos en un formato gráfico, similar a un histograma, para ayudar a visualizar la forma de nuestra distribución.</p>
+						
+						<p>
+<div class="chunk" id="unnamed-chunk-14"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">plot.new</span><span class="hl std">()</span>
+<span class="hl std">tmp</span> <span class="hl kwb">&lt;-</span> <span class="hl kwd">capture.output</span><span class="hl std">(</span><span class="hl kwd">stem</span><span class="hl std">(</span><span class="hl kwd">as.matrix</span><span class="hl std">(datos)))</span>
+<span class="hl std">tmp[</span><span class="hl num">1</span><span class="hl std">]</span><span class="hl kwb">&lt;-</span><span class="hl str">&quot;The decimal point is 3 digit(s)&quot;</span>
+<span class="hl std">tmp[</span><span class="hl num">2</span><span class="hl std">]</span><span class="hl kwb">&lt;-</span><span class="hl str">&quot;to the right of the |&quot;</span>
+
+<span class="hl kwd">text</span><span class="hl std">(</span><span class="hl num">0</span><span class="hl std">,</span><span class="hl num">1</span><span class="hl std">,</span><span class="hl kwd">paste</span><span class="hl std">(tmp,</span> <span class="hl kwc">collapse</span><span class="hl std">=</span><span class="hl str">'\n'</span><span class="hl std">),</span> <span class="hl kwc">adj</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl num">0</span><span class="hl std">,</span><span class="hl num">1</span><span class="hl std">),</span> <span class="hl kwc">family</span><span class="hl std">=</span><span class="hl str">'mono'</span><span class="hl std">,</span><span class="hl kwc">cex</span><span class="hl std">=</span><span class="hl num">1.5</span><span class="hl std">)</span>
+</pre></div>
+</div><div class="rimage center"><img src="figure/unnamed-chunk-14-1.png" title="plot of chunk unnamed-chunk-14" alt="plot of chunk unnamed-chunk-14" class="plot" /></div></div>
+						</p>
+						
+						<p>Para finalizar el ejercicio, veamos una estimación no paramétrica de la función de densidad del conjunto de datos utilizando el método <code>density</code>, representándolo sobre nuestro histograma.</p>
+						
+						<p>
+<div class="chunk" id="unnamed-chunk-15"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">hist</span><span class="hl std">(</span><span class="hl kwc">x</span><span class="hl std">=</span><span class="hl kwd">as.matrix</span><span class="hl std">(datos),</span> <span class="hl kwc">main</span><span class="hl std">=</span><span class="hl str">&quot;Función de densidad&quot;</span><span class="hl std">,</span> <span class="hl kwc">breaks</span><span class="hl std">=</span><span class="hl num">10</span><span class="hl std">,</span> <span class="hl kwc">col</span><span class="hl std">=</span><span class="hl str">&quot;red&quot;</span><span class="hl std">,</span>
+<span class="hl kwc">xlab</span><span class="hl std">=</span><span class="hl str">&quot;Número Accidentes&quot;</span><span class="hl std">,</span> <span class="hl kwc">ylab</span><span class="hl std">=</span><span class="hl str">&quot;Densidad&quot;</span><span class="hl std">,</span> <span class="hl kwc">density</span><span class="hl std">=</span><span class="hl num">50</span><span class="hl std">,</span> <span class="hl kwc">prob</span><span class="hl std">=T)</span>
+<span class="hl kwd">lines</span><span class="hl std">(</span><span class="hl kwd">density</span><span class="hl std">(</span><span class="hl kwd">as.matrix</span><span class="hl std">(datos)),</span><span class="hl kwc">lwd</span><span class="hl std">=</span><span class="hl num">4</span><span class="hl std">)</span>
+</pre></div>
+</div><div class="rimage center"><img src="figure/unnamed-chunk-15-1.png" title="plot of chunk unnamed-chunk-15" alt="plot of chunk unnamed-chunk-15" class="plot" /></div></div>
+						</p>
+						
+						<p>Así, vemos que nuestro conjunto de datos tiene una distribución similar a una normal centrada en 9000, aproximadamente.</p>					
+						
+						</li>
+						
+						<li id="ej_3">
+						<p class="pregunta">Estudia la definición de <code>t.test</code> y aplícala en casos de una y dos muestras.</p>
+						<p>La función <code>t.test</code> se encarga de realizar prueba T de Student, que es cualquier prueba en la que el estadístico tomado tenga una distribución de T de Student si la hipótesis nula es cierta. Esta prueba se utiliza comúnmente para determinar si las medias de dos distribuciones son iguales entre sí. Concretamente, el método <code>t.test</code> realizará pruebas de t de Studentde una y dos muestras sobre los vectores de datos que le pasemos.</p>
+						
+						<p>Comencemos utilizando esta función con el fin de comprobar las hipótesis sobre la media de una población de la que extraemos una muestra. La población sobre la que vamos a trabajar es la normal, y extraeremos varios valores con la función <code>rnorm</code>, 	que nos proporciona valores aleatorios sobre la distribución normal.</p>
+
+						
+						<p>
+<div class="chunk" id="unnamed-chunk-16"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl std">muestra</span> <span class="hl kwb">&lt;-</span> <span class="hl kwd">rnorm</span><span class="hl std">(</span><span class="hl kwc">n</span><span class="hl std">=</span><span class="hl num">10</span><span class="hl std">)</span>
+<span class="hl kwd">t.test</span><span class="hl std">(muestra)</span>
+</pre></div>
+<div class="output"><pre class="knitr r">## 
+## 	One Sample t-test
+## 
+## data:  muestra
+## t = -0.51669, df = 9, p-value = 0.6178
+## alternative hypothesis: true mean is not equal to 0
+## 95 percent confidence interval:
+##  -0.7149982  0.4491099
+## sample estimates:
+##  mean of x 
+## -0.1329441
+</pre></div>
+</div></div>
+						</p>
+						
+						<p>Vemos que el test funciona medianamente bien aún teniendo tan pocos valores, pues la media real de la distribución es \(\mu=0\) y la obtenida para la muestra es \(\overline X=-0.1329441\), con un intervalo al 95% de confianza \([-0.7149982, 0.4491099]\). Cuantos más datos tomemos para <code>rnorm</code>, más se acercará la media inferenciada a la media real de la distribución, como vemos a continuación</p>
+						<p>
+<div class="chunk" id="unnamed-chunk-17"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl std">muestra</span> <span class="hl kwb">&lt;-</span> <span class="hl kwd">rnorm</span><span class="hl std">(</span><span class="hl kwc">n</span><span class="hl std">=</span><span class="hl num">100000</span><span class="hl std">)</span>
+<span class="hl kwd">t.test</span><span class="hl std">(muestra)</span><span class="hl opt">$</span><span class="hl std">estimate</span>
+</pre></div>
+<div class="output"><pre class="knitr r">##    mean of x 
+## 0.0008570828
+</pre></div>
+</div></div>
+						</p>
+						
+						<p>De la misma manera, hagamos ahora una prueba t de Student con dos muestras tomadas sobre la normal. Nuestro cometido en este caso es determinar si se cumple la hipótesis de que las medias son iguales en las dos distribuciones de las que se han tomado las muestras (\(\mu_1-\mu_2=0\)).</p>
+						<p>
+<div class="chunk" id="unnamed-chunk-18"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl std">muestra_1</span><span class="hl kwb">&lt;-</span><span class="hl kwd">rnorm</span><span class="hl std">(</span><span class="hl kwc">n</span><span class="hl std">=</span><span class="hl num">10</span><span class="hl std">)</span>
+<span class="hl std">muestra_2</span><span class="hl kwb">&lt;-</span><span class="hl kwd">rnorm</span><span class="hl std">(</span><span class="hl kwc">n</span><span class="hl std">=</span><span class="hl num">10</span><span class="hl std">)</span>
+<span class="hl kwd">t.test</span><span class="hl std">(muestra_1,muestra_2)</span>
+</pre></div>
+<div class="output"><pre class="knitr r">## 
+## 	Welch Two Sample t-test
+## 
+## data:  muestra_1 and muestra_2
+## t = -0.27946, df = 14.174, p-value = 0.7839
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -1.351329  1.039457
+## sample estimates:
+##   mean of x   mean of y 
+## -0.17773116 -0.02179512
+</pre></div>
+</div></div>
+						</p>
+						<p>Podemos ver que se estiman unas medias similares para las dos muestras, pero el intervalo de confianza para la diferencia de las medias es muy grande, debido al pequeño número de elementos de cada población que se han tomado. Además el p-value vale 0.7839, un valor muy superior al 0.05 del umbral, por lo que podemos	rechazar la hipótesis de que difieran las medias, que es la que se toma como hipótesis principal en esta función <code>t.test</code>.</p>
+						<p>De la misma manera que en el caso de una muestra, si tomamos muchos más elementos para las dos poblaciones podríamos asegurar con más precisión nuestras hipótesis. También podemos hacer este proceso a la inversa, comprobando si las medias de las poblaciones son diferentes:</p>
+						<p>
+<div class="chunk" id="unnamed-chunk-19"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">t.test</span><span class="hl std">(</span><span class="hl kwd">rnorm</span><span class="hl std">(</span><span class="hl kwc">n</span><span class="hl std">=</span><span class="hl num">10</span><span class="hl std">,</span><span class="hl kwc">mean</span><span class="hl std">=</span><span class="hl opt">-</span><span class="hl num">1</span><span class="hl std">),</span> <span class="hl kwd">rnorm</span><span class="hl std">(</span><span class="hl kwc">n</span><span class="hl std">=</span><span class="hl num">10</span><span class="hl std">,</span><span class="hl kwc">mean</span><span class="hl std">=</span><span class="hl num">1</span><span class="hl std">))</span>
+</pre></div>
+<div class="output"><pre class="knitr r">## 
+## 	Welch Two Sample t-test
+## 
+## data:  rnorm(n = 10, mean = -1) and rnorm(n = 10, mean = 1)
+## t = -3.7064, df = 17.96, p-value = 0.00162
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -3.5430134 -0.9792397
+## sample estimates:
+## mean of x mean of y 
+## -1.110301  1.150826
+</pre></div>
+</div></div>
+						</p>
+						
+						<p>Ya que el p-value=0.00162 es menor que 0.05, podemos afirmar que las muestras difieren en su media, es decir, los dos variables son diferentes.</p>
+						
+						</li>
+						
+						<li id="ej_4">
+						<p class="pregunta">Haz un caso de regresión lineal con datos que tú elijas.</p>
+						<p>Para este ejercicio usaremos el conjunto de datos <code>cars</code> que vimos en la entrega anterior, el cuál relaciona la velocidad de un coche con su distancia de frenado. Utilizaremos la regresión lineal para idenfiticar la recta óptima que atraviese la nube de puntos formada por los datos de nuestro conjunto de datos.</p>
+						<p>Para generar un modelo de regresión lineal hemos de utilizar la función <code>lm</code>, a la que habremos de pasarle un conjunto de datos sobre el que trabajar y un parámetro <code>formula</code> que contendrá una descripción simbólica del modelo a ajustar, en nuestro caso distancia-velocidad. </p>						
+						
+						<p>
+<div class="chunk" id="unnamed-chunk-20"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">plot</span><span class="hl std">(cars,</span> <span class="hl kwc">pch</span><span class="hl std">=</span><span class="hl num">19</span><span class="hl std">,</span> <span class="hl kwc">col</span><span class="hl std">=</span><span class="hl str">&quot;green&quot;</span><span class="hl std">,</span> <span class="hl kwc">main</span><span class="hl std">=</span><span class="hl str">&quot;Relación velocidad-distancia
+y ajuste mediante regresión lineal&quot;</span><span class="hl std">,</span> <span class="hl kwc">xlab</span><span class="hl std">=</span><span class="hl str">&quot;Velocidad&quot;</span><span class="hl std">,</span> <span class="hl kwc">ylab</span><span class="hl std">=</span><span class="hl str">&quot;Distancia frenado&quot;</span><span class="hl std">)</span>
+<span class="hl std">modelo</span> <span class="hl kwb">&lt;-</span> <span class="hl kwd">lm</span><span class="hl std">(</span><span class="hl kwc">formula</span><span class="hl std">=dist</span> <span class="hl opt">~</span> <span class="hl std">speed,</span> <span class="hl kwc">data</span><span class="hl std">=cars)</span>
+<span class="hl kwd">abline</span><span class="hl std">(modelo,</span> <span class="hl kwc">col</span><span class="hl std">=</span><span class="hl str">&quot;red&quot;</span><span class="hl std">)</span>
+</pre></div>
+</div><div class="rimage center"><img src="figure/unnamed-chunk-20-1.png" title="plot of chunk unnamed-chunk-20" alt="plot of chunk unnamed-chunk-20" class="plot" /></div></div>
+						</p>
+						
+						<p>Podemos ver que la recta ajustada, dibujada en rojo, se encuentra en la mitad de los datos, siendo una recta óptima sobre la nube de puntos.</p>
+						<p>Al igual que con los <code>dataframes</code>, podemos ver un <i>resumen</i> del modelo que se ha generado con el ajuste de regresión lineal utilizando la función <code>summary</code>:</p>
+						
+						<p>
+<div class="chunk" id="unnamed-chunk-21"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">summary</span><span class="hl std">(modelo)</span>
+</pre></div>
+<div class="output"><pre class="knitr r">## 
+## Call:
+## lm(formula = dist ~ speed, data = cars)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -29.069  -9.525  -2.272   9.215  43.201 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -17.5791     6.7584  -2.601   0.0123 *  
+## speed         3.9324     0.4155   9.464 1.49e-12 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 15.38 on 48 degrees of freedom
+## Multiple R-squared:  0.6511,	Adjusted R-squared:  0.6438 
+## F-statistic: 89.57 on 1 and 48 DF,  p-value: 1.49e-12
+</pre></div>
+</div></div>
+						</p>
+						
+						<p>Vayamos por partes:
+							<ul>
+								<li class="normal"><code>residuals</code> contiene los residuos del modelo, es decir, la diferencia entre el ajuste realizado y los valores reales. Podemos ver que la mediana de los residuos es -2.272, que no es un valor muy grande, pero su máximo y mínimo son elevados, al haber <i>outliers</i>, como por ejemplo el punto de arriba a la derecha en la gráfica, que está alejado del resto de valores.</li>
+								<li class="normal"><code>coefficientes</code> representa los coeficientes del modelo de regresión lineal que hemos ajustado, los valores de la pendiente y el punto de corte con el eje \(y\) que tendrá la recta del estilo \(mx+n\). Además, tendremos el error de estos coeficientes junto a otros valores.</li>
+								<li class="normal">En la siguiente línea tendremos el <code>residual standard error</code>, que cuanto más se acerque a 0 significa que más perfecto es nuestro ajuste (¡cuidado con el sobreajuste!) y los grados de libertad, 48, que representa la cantidad de información pasada al modelo para el ajuste.</li>
+								<li class="normal">Para finalizar tendremos ciertos valores estadísticos que representarán información sobre la calidad de nuestro ajuste, pero no será relevante un estudio tan profundo de este ejemplo de regresión lineal.</li>
+							</ul>
+						</p>
+						
+						<p>La regresión lineal es un modelo de predicción muy utilizado en aprendizaje automático y ajuste de datos, siendo además la base de otros algoritmos más potentes, como por ejemplo ciertos tipos de redes neuronales.</p>
+						</li>
+						
+					</ol>
+				
+				</article>
+				
+				<p style="text-align:center;"><br><br><br><br>FIN</p>
+				
+			</section>
+		</section>
+		
+		
+		
+		<nav>
+			<p><strong>Índice</strong></p>
+			<ul>
+				<li><a href="#ej_1">Ejercicio 1</a></li>
+				<li><a href="#ej_2">Ejercicio 2</a></li>
+				<li><a href="#ej_3">Ejercicio 3</a></li>
+				<li><a href="#ej_4">Ejercicio 4</a></li>
+			</ul>
+		</nav>
+	
+		<section id="extra">
+			<p><strong>Simón López Vico</strong></p>
+			<p>Universidad de Granada</p>
+			<p>Ingeniería Informática y Matemáticas</p>
+		</section>
+		
+		<footer>
+			<p>Simón López Vico</p>
+			<p>simondelosbros@correo.ugr.es</p>
+		</footer>
+	
+</body>
+
+</html>

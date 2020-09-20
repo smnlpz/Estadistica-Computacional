@@ -1,0 +1,378 @@
+<!DOCTYPE HTML>
+<html lang="es">
+
+<head>
+<style type="text/css">
+.inline {
+  background-color: #f7f7f7;
+  border:solid 1px #B0B0B0;
+}
+.error {
+	font-weight: bold;
+	color: #FF0000;
+}
+.warning {
+	font-weight: bold;
+}
+.message {
+	font-style: italic;
+}
+.source, .output, .warning, .error, .message {
+	padding: 0 1em;
+  border:solid 1px #F7F7F7;
+}
+.source {
+  background-color: #f5f5f5;
+}
+.left {
+  text-align: left;
+}
+.right {
+  text-align: right;
+}
+.center {
+  text-align: center;
+}
+.hl.num {
+  color: #AF0F91;
+}
+.hl.str {
+  color: #317ECC;
+}
+.hl.com {
+  color: #AD95AF;
+  font-style: italic;
+}
+.hl.opt {
+  color: #000000;
+}
+.hl.std {
+  color: #585858;
+}
+.hl.kwa {
+  color: #295F94;
+  font-weight: bold;
+}
+.hl.kwb {
+  color: #B05A65;
+}
+.hl.kwc {
+  color: #55aa55;
+}
+.hl.kwd {
+  color: #BC5A65;
+  font-weight: bold;
+}
+</style>
+	<title>Entrega 3</title>
+	<meta charset="UTF-8"/>
+	<link rel="icon" type="image/png" href="resources/images/icon.png"/>
+	<link rel="stylesheet" type="text/css" href="resources/css/style.css" />
+	<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.0.1/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+		<header>
+			<section id="texto">
+				<h1>Estadística Computacional: <span id="entrega">Entrega 3</span></h1>
+				<h3>Representación Gráfica de Datos</h3>
+			</section>
+			<section id="ugr">
+				<img id="logo_ugr" src="./resources/images/ugr.png" alt="UGR">
+			</section>
+		</header>
+
+		<section id="wrapper">
+			<section id="content">
+				<article id="introduccion">
+					<h2>Introducción</h2>
+					<p>En esta entrega nos disponemos a entender y utilizar las distintas opciones de representación gráfica que nos proporciona R. Para ello, vamos a utilizar una biblioteca que nos proporcionará una gran variedad de conjuntos de datos, con los que podremos trabajar estudiando gráficamente sus distintas propiedades. Para ello, la cargaremos con la siguiente orden:</p>
+					<p>
+<div class="chunk" id="unnamed-chunk-1"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">library</span><span class="hl std">(datasets)</span>
+</pre></div>
+</div></div>
+					</p>
+					<p>¿Cuántos conjuntos de datos nos proporciona? Muchos, entre ellos el dataset más utilizado para ejemplos en ciencia de datos, <code>iris</code>. Podemos ver todos de la siguiente manera:</p>
+					<p>
+<div class="chunk" id="unnamed-chunk-2"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl com"># Realmente este código muestra la información por terminal, así que</span>
+<span class="hl com"># escribiremos el resultado entre comentarios</span>
+
+<span class="hl kwd">library</span><span class="hl std">(</span><span class="hl kwc">help</span><span class="hl std">=</span><span class="hl str">&quot;datasets&quot;</span><span class="hl std">)</span>
+
+<span class="hl com"># AirPassengers           Monthly Airline Passenger Numbers 1949-1960</span>
+<span class="hl com"># BJsales                 Sales Data with Leading Indicator</span>
+<span class="hl com"># BOD                     Biochemical Oxygen Demand</span>
+<span class="hl com"># CO2                     Carbon Dioxide Uptake in Grass Plants</span>
+<span class="hl com"># ChickWeight             Weight versus age of chicks on different diets</span>
+<span class="hl com"># DNase                   Elisa assay of DNase</span>
+<span class="hl com"># EuStockMarkets          Daily Closing Prices of Major European Stock</span>
+<span class="hl com">#                         Indices, 1991-1998</span>
+<span class="hl com"># Formaldehyde            Determination of Formaldehyde</span>
+<span class="hl com"># HairEyeColor            Hair and Eye Color of Statistics Students</span>
+<span class="hl com"># Harman23.cor            Harman Example 2.3</span>
+<span class="hl com"># Harman74.cor            Harman Example 7.4</span>
+<span class="hl com"># [...]</span>
+<span class="hl com"># iris                    Edgar Anderson's Iris Data</span>
+<span class="hl com"># islands                 Areas of the World's Major Landmasses</span>
+<span class="hl com"># lh                      Luteinizing Hormone in Blood Samples</span>
+<span class="hl com"># [...]</span>
+</pre></div>
+</div></div>
+					</p>
+					<p>Con esto, comencemos nuestro trabajo.</p>
+				</article>
+				
+				<article id="plot_text_symbols">
+					<h2>Funciones <code>plot, text</code> y <code>symbols</code></h2>
+					<p>Comenzaremos estudiando y representando estas tres funciones en un mismo gráfico, pues pueden ser usadas de manera complementaria. La primera de ellas es la función <code>plot</code>, una función simple que se encarga de generar un gráfico del conjunto de datos que le pasemos. Llamando a la función sin parámetros obtenemos una representación muy básica, por la que añadiremos unos cuantos parámetros para darle color, así como nombres a los ejes, etc.</p>
+					<p>
+<div class="chunk" id="unnamed-chunk-3"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl com"># Definimos una curva a representar</span>
+<span class="hl std">lemniscata</span> <span class="hl kwb">&lt;-</span> <span class="hl kwa">function</span><span class="hl std">(</span><span class="hl kwc">t</span><span class="hl std">){</span>
+   <span class="hl kwd">return</span><span class="hl std">(</span>
+      <span class="hl kwd">list</span><span class="hl std">(</span>
+         <span class="hl kwc">x</span><span class="hl std">=</span><span class="hl num">3</span><span class="hl opt">*</span><span class="hl kwd">sin</span><span class="hl std">(t)</span><span class="hl opt">/</span><span class="hl std">(</span><span class="hl num">1</span><span class="hl opt">+</span><span class="hl kwd">cos</span><span class="hl std">(t)</span><span class="hl opt">^</span><span class="hl num">2</span><span class="hl std">),</span>
+         <span class="hl kwc">y</span><span class="hl std">=</span><span class="hl num">3</span><span class="hl opt">*</span><span class="hl kwd">sin</span><span class="hl std">(t)</span><span class="hl opt">*</span><span class="hl kwd">cos</span><span class="hl std">(t)</span><span class="hl opt">/</span><span class="hl std">(</span><span class="hl num">1</span><span class="hl opt">+</span><span class="hl kwd">cos</span><span class="hl std">(t)</span><span class="hl opt">^</span><span class="hl num">2</span><span class="hl std">)</span>
+      <span class="hl std">)</span>
+   <span class="hl std">)</span>
+<span class="hl std">}</span>
+
+<span class="hl com"># Definimos los puntos en los que evaluar la curva</span>
+<span class="hl std">t</span><span class="hl kwb">=</span><span class="hl kwd">seq</span><span class="hl std">(</span><span class="hl num">0</span><span class="hl std">,</span><span class="hl num">2</span><span class="hl opt">*</span><span class="hl std">pi,</span> <span class="hl kwc">by</span><span class="hl std">=pi</span><span class="hl opt">/</span><span class="hl num">50</span><span class="hl std">)</span>
+
+<span class="hl com"># Dibujamos la gráfica, uniendo los puntos por líneas, y dándole color rojo</span>
+<span class="hl kwd">plot</span><span class="hl std">(</span><span class="hl kwd">lemniscata</span><span class="hl std">(t)</span><span class="hl opt">$</span><span class="hl std">x,</span> <span class="hl kwd">lemniscata</span><span class="hl std">(t)</span><span class="hl opt">$</span><span class="hl std">y,</span> <span class="hl kwc">type</span><span class="hl std">=</span><span class="hl str">&quot;l&quot;</span><span class="hl std">,</span> <span class="hl kwc">col</span><span class="hl std">=</span><span class="hl str">&quot;red&quot;</span><span class="hl std">,</span> <span class="hl kwc">xlab</span><span class="hl std">=</span><span class="hl str">&quot;x&quot;</span><span class="hl std">,</span> <span class="hl kwc">ylab</span><span class="hl std">=</span><span class="hl str">&quot;y&quot;</span><span class="hl std">)</span>
+</pre></div>
+</div><div class="rimage center"><img src="figure/unnamed-chunk-3-1.png" title="plot of chunk unnamed-chunk-3" alt="plot of chunk unnamed-chunk-3" class="plot" /></div></div>
+					</p>
+					
+					<p>Con esta función también podremos representar gráficas de puntos, y en el caso de que tengamos un conjunto de datos con varios atributos, una matriz de gráficas de puntos, también llamada <i>scatter matrix</i>.</p>
+					
+					<p>
+<div class="chunk" id="unnamed-chunk-4"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl com"># Seleccionamos los atributos que queremos representar</span>
+<span class="hl kwd">library</span><span class="hl std">(dplyr)</span>
+<span class="hl std">iris_plot</span> <span class="hl kwb">&lt;-</span> <span class="hl kwd">select</span><span class="hl std">(iris,</span> <span class="hl str">&quot;Sepal.Length&quot;</span><span class="hl std">,</span> <span class="hl str">&quot;Petal.Length&quot;</span><span class="hl std">,</span> <span class="hl str">&quot;Sepal.Width&quot;</span><span class="hl std">,</span> <span class="hl str">&quot;Petal.Width&quot;</span><span class="hl std">)</span>
+
+<span class="hl com"># Imprimimos por pantalla la matriz de gráficas de puntos, dándole un color a cada atributo</span>
+<span class="hl kwd">plot</span><span class="hl std">(iris_plot,</span><span class="hl kwc">col</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl str">&quot;red&quot;</span><span class="hl std">,</span><span class="hl str">&quot;blue&quot;</span><span class="hl std">,</span><span class="hl str">&quot;orange&quot;</span><span class="hl std">,</span><span class="hl str">&quot;green&quot;</span><span class="hl std">),</span> <span class="hl kwc">pch</span><span class="hl std">=</span><span class="hl num">19</span><span class="hl std">,</span>
+     <span class="hl kwc">labels</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl str">&quot;Longitud sépalo&quot;</span><span class="hl std">,</span><span class="hl str">&quot;Longitud pétalo&quot;</span><span class="hl std">,</span><span class="hl str">&quot;Ancho sépalo&quot;</span><span class="hl std">,</span><span class="hl str">&quot;Ancho pétalo&quot;</span><span class="hl std">))</span>
+</pre></div>
+</div><div class="rimage center"><img src="figure/unnamed-chunk-4-1.png" title="plot of chunk unnamed-chunk-4" alt="plot of chunk unnamed-chunk-4" class="plot" /></div></div>
+					</p>
+					
+					<p>Visto esto, pasemos a la función <code>text</code>, que añade texto a un gráfico ya existente. Esta función es de gran uso para diferenciar diferentes elementos en una misma gráfica, y de esta manera la utilizaremos para nombrar en una gráfica una lemniscata y la función coseno.</p>
+					<p>
+<div class="chunk" id="unnamed-chunk-5"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl com"># Comenzamos definiendo lo que vamos a representar por pantalla</span>
+<span class="hl kwd">plot</span><span class="hl std">(</span><span class="hl kwd">lemniscata</span><span class="hl std">(t)</span><span class="hl opt">$</span><span class="hl std">x,</span> <span class="hl kwd">lemniscata</span><span class="hl std">(t)</span><span class="hl opt">$</span><span class="hl std">y,</span> <span class="hl kwc">type</span><span class="hl std">=</span><span class="hl str">&quot;l&quot;</span><span class="hl std">,</span> <span class="hl kwc">col</span><span class="hl std">=</span><span class="hl str">&quot;red&quot;</span><span class="hl std">,</span> <span class="hl kwc">xlab</span><span class="hl std">=</span><span class="hl str">&quot;x&quot;</span><span class="hl std">,</span> <span class="hl kwc">ylab</span><span class="hl std">=</span><span class="hl str">&quot;y&quot;</span><span class="hl std">,</span> <span class="hl kwc">ylim</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl opt">-</span><span class="hl num">1</span><span class="hl std">,</span><span class="hl num">1.5</span><span class="hl std">))</span>
+<span class="hl kwd">lines</span><span class="hl std">(</span><span class="hl kwc">x</span><span class="hl std">=</span><span class="hl kwd">seq</span><span class="hl std">(</span><span class="hl opt">-</span><span class="hl num">2</span><span class="hl opt">*</span><span class="hl std">pi,</span><span class="hl num">2</span><span class="hl opt">*</span><span class="hl std">pi,</span> <span class="hl kwc">by</span><span class="hl std">=</span><span class="hl num">0.05</span><span class="hl std">),</span> <span class="hl kwc">y</span><span class="hl std">=</span><span class="hl kwd">cos</span><span class="hl std">(</span><span class="hl kwd">seq</span><span class="hl std">(</span><span class="hl opt">-</span><span class="hl num">2</span><span class="hl opt">*</span><span class="hl std">pi,</span><span class="hl num">2</span><span class="hl opt">*</span><span class="hl std">pi,</span> <span class="hl kwc">by</span><span class="hl std">=</span><span class="hl num">0.05</span><span class="hl std">)),</span> <span class="hl kwc">col</span><span class="hl std">=</span><span class="hl str">&quot;blue&quot;</span><span class="hl std">)</span>
+
+<span class="hl com"># Ahora, añadimos el texto</span>
+<span class="hl kwd">text</span><span class="hl std">(</span><span class="hl kwc">x</span><span class="hl std">=</span><span class="hl num">2</span><span class="hl std">,</span> <span class="hl kwc">y</span><span class="hl std">=</span><span class="hl num">1.3</span><span class="hl std">,</span> <span class="hl kwc">labels</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl str">&quot;lemniscata\n&quot;</span><span class="hl std">,</span> <span class="hl str">&quot;\ncos(t)&quot;</span><span class="hl std">),</span> <span class="hl kwc">col</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl str">&quot;red&quot;</span><span class="hl std">,</span><span class="hl str">&quot;blue&quot;</span><span class="hl std">),</span> <span class="hl kwc">cex</span><span class="hl std">=</span><span class="hl num">1.5</span><span class="hl std">)</span>
+</pre></div>
+</div><div class="rimage center"><img src="figure/unnamed-chunk-5-1.png" title="plot of chunk unnamed-chunk-5" alt="plot of chunk unnamed-chunk-5" class="plot" /></div></div>
+					</p>
+					
+					<p>Por último, disponemos de la función <code>symbols</code>, que nos permitirá dibujar una gran cantidad de figuras como círculos, estrellas, cuadrados, etc. Admitirá como parámetros la posición determinada de estos objetos, su color o su tamaño entre muchos otros valores. Realmente no imagino qué utilidad puede tener salvo representar alguna figura sobre una función o una gráfica de puntos.</p>
+				</article>
+							
+				<article id="hist_curve">
+					<h2>Funciones <code>hist</code> y <code>curve</code></h2>
+					<p>La función <code>hist</code>, que ya utilizamos en la entrega anterior, genera y devuelve un histograma de los datos que le pasemos por parámetro, de manera que podamos ver más facilmente la distribución de nuestros datos. En este caso, veamos la distribución del conjunto de datos <code>cars</code>, que contendrá la velocidad y la distancia de frenado de distintos coches. Para acceder a cada uno de sus atributos, utilizaremos <code>cars$speed</code> y <code>cars$dist</code>. Le daremos algo de color a cada histograma para que no quede muy simple.</p>
+					
+					<p>
+<div class="chunk" id="unnamed-chunk-6"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">hist</span><span class="hl std">(</span><span class="hl kwc">x</span><span class="hl std">=cars</span><span class="hl opt">$</span><span class="hl std">speed,</span> <span class="hl kwc">main</span><span class="hl std">=</span><span class="hl str">&quot;Histograma Velocidad&quot;</span><span class="hl std">,</span> <span class="hl kwc">breaks</span><span class="hl std">=</span><span class="hl num">10</span><span class="hl std">,</span> <span class="hl kwc">col</span><span class="hl std">=</span><span class="hl str">&quot;red&quot;</span><span class="hl std">,</span>
+     <span class="hl kwc">xlab</span><span class="hl std">=</span><span class="hl str">&quot;Velocidad&quot;</span><span class="hl std">,</span> <span class="hl kwc">ylab</span><span class="hl std">=</span><span class="hl str">&quot;Frecuencia&quot;</span><span class="hl std">,</span> <span class="hl kwc">density</span><span class="hl std">=</span><span class="hl num">50</span><span class="hl std">)</span>
+</pre></div>
+</div><div class="rimage center"><img src="figure/unnamed-chunk-6-1.png" title="plot of chunk unnamed-chunk-6" alt="plot of chunk unnamed-chunk-6" class="plot" /></div><div class="rcode">
+<div class="source"><pre class="knitr r"><span class="hl kwd">hist</span><span class="hl std">(</span><span class="hl kwc">x</span><span class="hl std">=cars</span><span class="hl opt">$</span><span class="hl std">dist,</span> <span class="hl kwc">main</span><span class="hl std">=</span><span class="hl str">&quot;Histograma Distancia&quot;</span><span class="hl std">,</span> <span class="hl kwc">breaks</span><span class="hl std">=</span><span class="hl num">10</span><span class="hl std">,</span> <span class="hl kwc">col</span><span class="hl std">=</span><span class="hl str">&quot;green&quot;</span><span class="hl std">,</span>
+     <span class="hl kwc">xlab</span><span class="hl std">=</span><span class="hl str">&quot;Distancia&quot;</span><span class="hl std">,</span> <span class="hl kwc">ylab</span><span class="hl std">=</span><span class="hl str">&quot;Frecuencia&quot;</span><span class="hl std">,</span> <span class="hl kwc">density</span><span class="hl std">=</span><span class="hl num">50</span><span class="hl std">)</span>
+</pre></div>
+</div><div class="rimage center"><img src="figure/unnamed-chunk-6-2.png" title="plot of chunk unnamed-chunk-6" alt="plot of chunk unnamed-chunk-6" class="plot" /></div></div>
+					</p>
+					
+					<p>Por otra parte, tenemos el método <code>curve</code>, que representará una curva en una gráfica que mostrará por pantalla. La diferencia de este método con <code>plot</code> es que <code>plot</code> puede representar cualquier dato que le pasemos (numérico) mientras que <code>curve</code> es específco para representación de funciones. Además, con el parámetro <code>add</code> podremos añadir cualquier nueva función al gráfico ya generado previamente.</p>
+					
+					<p>
+<div class="chunk" id="unnamed-chunk-7"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">curve</span><span class="hl std">(</span><span class="hl kwd">log</span><span class="hl std">(x)</span><span class="hl opt">*</span><span class="hl kwd">sin</span><span class="hl std">(</span><span class="hl num">3</span><span class="hl opt">*</span><span class="hl std">x),</span> <span class="hl num">0</span><span class="hl std">,</span> <span class="hl num">10</span><span class="hl std">,</span> <span class="hl kwc">col</span><span class="hl std">=</span><span class="hl str">&quot;red&quot;</span><span class="hl std">,</span> <span class="hl kwc">xlim</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl opt">-</span><span class="hl num">10</span><span class="hl std">,</span><span class="hl num">10</span><span class="hl std">),</span>
+      <span class="hl kwc">xlab</span><span class="hl std">=</span><span class="hl str">&quot;x&quot;</span><span class="hl std">,</span> <span class="hl kwc">ylab</span><span class="hl std">=</span><span class="hl str">&quot;y&quot;</span><span class="hl std">,</span> <span class="hl kwc">main</span><span class="hl std">=</span><span class="hl str">&quot;Representación de curvas&quot;</span><span class="hl std">)</span>
+<span class="hl kwd">curve</span><span class="hl std">((x</span><span class="hl opt">^</span><span class="hl num">3</span><span class="hl opt">-</span><span class="hl num">3</span><span class="hl opt">*</span><span class="hl std">x)</span><span class="hl opt">/</span><span class="hl std">(</span><span class="hl num">3</span><span class="hl opt">*</span><span class="hl std">x</span><span class="hl opt">^</span><span class="hl num">2</span><span class="hl opt">+</span><span class="hl num">1</span><span class="hl std">),</span> <span class="hl opt">-</span><span class="hl num">10</span><span class="hl std">,</span> <span class="hl num">10</span><span class="hl std">,</span> <span class="hl kwc">col</span><span class="hl std">=</span><span class="hl str">&quot;green&quot;</span><span class="hl std">,</span> <span class="hl kwc">add</span><span class="hl std">=</span><span class="hl num">TRUE</span><span class="hl std">)</span>
+
+<span class="hl kwd">text</span><span class="hl std">(</span><span class="hl kwc">x</span><span class="hl std">=</span><span class="hl opt">-</span><span class="hl num">5</span><span class="hl std">,</span> <span class="hl kwc">y</span><span class="hl std">=</span><span class="hl num">1.5</span><span class="hl std">,</span> <span class="hl kwc">labels</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl str">&quot;log(x)*sin(3*x)\n\n&quot;</span><span class="hl std">,</span> <span class="hl str">&quot;\n(x^3-3*x)/(3*x^2+1)&quot;</span><span class="hl std">),</span>
+     <span class="hl kwc">col</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl str">&quot;red&quot;</span><span class="hl std">,</span><span class="hl str">&quot;green&quot;</span><span class="hl std">),</span> <span class="hl kwc">cex</span><span class="hl std">=</span><span class="hl num">1.5</span><span class="hl std">)</span>
+</pre></div>
+</div><div class="rimage center"><img src="figure/unnamed-chunk-7-1.png" title="plot of chunk unnamed-chunk-7" alt="plot of chunk unnamed-chunk-7" class="plot" /></div></div>
+					</p>
+				</article>
+				
+				
+				<article id="polygon_lines_points">
+					<h2>Funciones <code>polygon</code>, <code>lines</code> y <code>points</code></h2>
+					<p>Las tres funciones que vamos a tratar en este apartado se encargan de dibujar sobre un gráfico ya existente, es decir, añaden nueva información a la gráfica representada previamente como hacía, por ejemplo, la función <code>text</code>. La primera de ellas, <code>polygon</code>, dibuja polígonos definidos por sus vértices en un gráfico ya existente. Tiene una funcionalidad similar a la que tiene <code>symbols</code>, pero dando más libertad para dibujar la figura deseada.</p>
+					<p>
+<div class="chunk" id="unnamed-chunk-8"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">curve</span><span class="hl std">(</span><span class="hl kwd">sin</span><span class="hl std">(x),</span> <span class="hl opt">-</span><span class="hl num">2</span><span class="hl opt">*</span><span class="hl std">pi,</span> <span class="hl num">2</span><span class="hl opt">*</span><span class="hl std">pi,</span> <span class="hl kwc">col</span><span class="hl std">=</span><span class="hl str">&quot;blue&quot;</span><span class="hl std">,</span> <span class="hl kwc">ylab</span><span class="hl std">=</span><span class="hl str">&quot;y&quot;</span><span class="hl std">)</span>
+
+<span class="hl kwd">polygon</span><span class="hl std">(</span><span class="hl kwc">x</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl opt">-</span><span class="hl num">6.3</span><span class="hl std">,</span><span class="hl opt">-</span><span class="hl num">0.1</span><span class="hl std">,</span><span class="hl opt">-</span><span class="hl num">0.1</span><span class="hl std">,</span><span class="hl opt">-</span><span class="hl std">pi),</span> <span class="hl kwc">y</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl num">0</span><span class="hl std">,</span><span class="hl num">0</span><span class="hl std">,</span><span class="hl opt">-</span><span class="hl num">1</span><span class="hl std">,</span><span class="hl opt">-</span><span class="hl num">1</span><span class="hl std">),</span><span class="hl kwc">density</span><span class="hl std">=</span><span class="hl num">10</span><span class="hl std">,</span><span class="hl kwc">col</span><span class="hl std">=</span><span class="hl str">&quot;orange&quot;</span><span class="hl std">)</span>
+<span class="hl kwd">polygon</span><span class="hl std">(</span><span class="hl kwc">x</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl num">0.1</span><span class="hl std">,pi,</span><span class="hl num">6.3</span><span class="hl std">,</span><span class="hl num">0.1</span><span class="hl std">),</span> <span class="hl kwc">y</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl num">1</span><span class="hl std">,</span><span class="hl num">1</span><span class="hl std">,</span><span class="hl num">0</span><span class="hl std">,</span><span class="hl num">0</span><span class="hl std">),</span><span class="hl kwc">density</span><span class="hl std">=</span><span class="hl num">10</span><span class="hl std">,</span><span class="hl kwc">col</span><span class="hl std">=</span><span class="hl str">&quot;green&quot;</span><span class="hl std">)</span>
+</pre></div>
+</div><div class="rimage center"><img src="figure/unnamed-chunk-8-1.png" title="plot of chunk unnamed-chunk-8" alt="plot of chunk unnamed-chunk-8" class="plot" /></div></div>
+					</p>
+					<p>Las funciones <code>lines</code> y <code>points</code> tendrán el mismo funcionamiento que <code>plot(type="l")</code> y <code>plot(type="p")</code> respectivamente, pero en vez de generar un nuevo gráfico añadirán a uno ya existente. Aunque ya la hemos utilizado anteriormente para dibujar la lemniscata y el coseno, veamos algún otro ejemplo.</p>
+					<p>
+<div class="chunk" id="unnamed-chunk-9"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl std">t</span><span class="hl kwb">=</span><span class="hl kwd">seq</span><span class="hl std">(</span><span class="hl opt">-</span><span class="hl num">10</span><span class="hl std">,</span><span class="hl num">10</span><span class="hl std">,</span><span class="hl kwc">by</span><span class="hl std">=</span><span class="hl num">0.25</span><span class="hl std">)</span>
+
+<span class="hl com"># El valor type=&quot;o&quot; significa que se representa por líneas y puntos</span>
+<span class="hl kwd">plot</span><span class="hl std">(</span><span class="hl kwc">x</span><span class="hl std">=t,</span><span class="hl kwc">y</span><span class="hl std">=t</span><span class="hl opt">^</span><span class="hl num">2</span><span class="hl std">,</span><span class="hl kwc">col</span><span class="hl std">=</span><span class="hl str">&quot;red&quot;</span><span class="hl std">,</span> <span class="hl kwc">type</span><span class="hl std">=</span><span class="hl str">&quot;o&quot;</span><span class="hl std">,</span> <span class="hl kwc">ylab</span><span class="hl std">=</span><span class="hl str">&quot;y&quot;</span><span class="hl std">,</span> <span class="hl kwc">ylim</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl opt">-</span><span class="hl num">100</span><span class="hl std">,</span><span class="hl num">100</span><span class="hl std">))</span>
+<span class="hl kwd">lines</span><span class="hl std">(</span><span class="hl kwc">x</span><span class="hl std">=t,</span><span class="hl kwc">y</span><span class="hl std">=t</span><span class="hl opt">^</span><span class="hl num">3</span><span class="hl std">,</span><span class="hl kwc">col</span><span class="hl std">=</span><span class="hl str">&quot;blue&quot;</span><span class="hl std">)</span>
+<span class="hl kwd">points</span><span class="hl std">(</span><span class="hl kwc">x</span><span class="hl std">=t,</span><span class="hl kwc">y</span><span class="hl std">=t</span><span class="hl opt">^</span><span class="hl num">4</span><span class="hl std">,</span><span class="hl kwc">col</span><span class="hl std">=</span><span class="hl str">&quot;green&quot;</span><span class="hl std">)</span>
+</pre></div>
+</div><div class="rimage center"><img src="figure/unnamed-chunk-9-1.png" title="plot of chunk unnamed-chunk-9" alt="plot of chunk unnamed-chunk-9" class="plot" /></div></div>
+					</p>
+				</article>
+				
+				<article id="barplot_boxplot">
+					<h2>Funciones <code>barplot</code> y <code>boxplot</code></h2>
+					<p>La primera de estas funciones, <code>barplot</code>, genera gráficos de barras de maneras muy diversas. Para el ejemplo que vamos a realizar, utilizaremos el conjunto de datos <code>mtcars</code>, que contendrá información sobre las pruebas de distintos motores de coche en carretera. Para hacer un gráfico más visible, mostraremos la relación entre el tipo de motor (forma de V o recto) y el número de marchas.</p>
+					<p>
+<div class="chunk" id="unnamed-chunk-10"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">barplot</span><span class="hl std">(</span><span class="hl kwc">height</span><span class="hl std">=</span><span class="hl kwd">table</span><span class="hl std">(mtcars</span><span class="hl opt">$</span><span class="hl std">vs, mtcars</span><span class="hl opt">$</span><span class="hl std">gear),</span> <span class="hl kwc">col</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl str">&quot;green&quot;</span><span class="hl std">,</span><span class="hl str">&quot;yellow&quot;</span><span class="hl std">),</span> <span class="hl kwc">density</span><span class="hl std">=</span><span class="hl num">50</span><span class="hl std">,</span>
+<span class="hl kwc">main</span><span class="hl std">=</span><span class="hl str">&quot;Comparación entre\nNúmero de Marchas y tipo de motor&quot;</span><span class="hl std">,</span> <span class="hl kwc">xlab</span><span class="hl std">=</span><span class="hl str">&quot;Número de marchas&quot;</span><span class="hl std">,</span>
+<span class="hl kwc">legend</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl str">&quot;tipo motor&quot;</span><span class="hl std">,</span><span class="hl str">&quot;numero marchas&quot;</span><span class="hl std">))</span>
+</pre></div>
+</div><div class="rimage center"><img src="figure/unnamed-chunk-10-1.png" title="plot of chunk unnamed-chunk-10" alt="plot of chunk unnamed-chunk-10" class="plot" /></div></div>
+					</p>
+					<p>La función <code>boxplot</code> ya la utilizamos en la práctica anterior, y representaun gráfico de caja en el que aparecen datos como la media, los cuartiles o los valores extremos. Veamos el gráfico de la práctica pasada.</p>
+					<p>
+<div class="chunk" id="unnamed-chunk-11"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl std">datos2</span> <span class="hl kwb">&lt;-</span> <span class="hl kwd">read.csv</span><span class="hl std">(</span><span class="hl str">&quot;./resources/data/Datos2.txt&quot;</span><span class="hl std">,</span> <span class="hl kwc">header</span><span class="hl std">=</span><span class="hl num">TRUE</span><span class="hl std">,</span> <span class="hl kwc">sep</span><span class="hl std">=</span><span class="hl str">&quot; &quot;</span><span class="hl std">)</span>
+<span class="hl std">datos2</span><span class="hl opt">$</span><span class="hl std">Altura</span><span class="hl kwb">=</span><span class="hl std">datos2</span><span class="hl opt">$</span><span class="hl std">Altura</span><span class="hl opt">*</span><span class="hl num">100</span>
+
+<span class="hl kwd">boxplot</span><span class="hl std">(</span><span class="hl kwd">select</span><span class="hl std">(datos2,</span> <span class="hl str">&quot;Peso&quot;</span><span class="hl std">,</span> <span class="hl str">&quot;Altura&quot;</span><span class="hl std">,</span> <span class="hl str">&quot;Edad&quot;</span><span class="hl std">),</span> <span class="hl kwc">main</span><span class="hl std">=</span><span class="hl str">&quot;Diagrama de caja para Datos2.txt&quot;</span><span class="hl std">,</span>
+<span class="hl kwc">col</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl str">&quot;red&quot;</span><span class="hl std">,</span><span class="hl str">&quot;yellow&quot;</span><span class="hl std">,</span><span class="hl str">&quot;green&quot;</span><span class="hl std">))</span>
+</pre></div>
+</div><div class="rimage center"><img src="figure/unnamed-chunk-11-1.png" title="plot of chunk unnamed-chunk-11" alt="plot of chunk unnamed-chunk-11" class="plot" /></div></div>
+					</p>
+					
+				</article>
+				<article id="pairs_multiple">
+					<h2>Función <code>pairs</code> y gráficos múltiples</h2>
+					<p>En este apartado estudiamos función <code>pairs</code>, con la que podremos representar todos los diagramas de dispersión de un dataset con varias variables, más o menos como hicimos con la función <code>plot</code> y el dataset <code>iris</code>. Probemos con este mismo dataset de nuevo, pero mostrando también un histograma de cada atributo.</p>
+					<p>
+<div class="chunk" id="unnamed-chunk-12"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl std">panel.hist</span> <span class="hl kwb">&lt;-</span> <span class="hl kwa">function</span><span class="hl std">(</span><span class="hl kwc">x</span><span class="hl std">,</span> <span class="hl kwc">...</span><span class="hl std">)</span>
+<span class="hl std">{</span>
+   <span class="hl std">usr</span> <span class="hl kwb">&lt;-</span> <span class="hl kwd">par</span><span class="hl std">(</span><span class="hl str">&quot;usr&quot;</span><span class="hl std">);</span> <span class="hl kwd">on.exit</span><span class="hl std">(</span><span class="hl kwd">par</span><span class="hl std">(usr))</span>
+   <span class="hl kwd">par</span><span class="hl std">(</span><span class="hl kwc">usr</span> <span class="hl std">=</span> <span class="hl kwd">c</span><span class="hl std">(usr[</span><span class="hl num">1</span><span class="hl opt">:</span><span class="hl num">2</span><span class="hl std">],</span> <span class="hl num">0</span><span class="hl std">,</span> <span class="hl num">1.5</span><span class="hl std">) )</span>
+   <span class="hl std">h</span> <span class="hl kwb">&lt;-</span> <span class="hl kwd">hist</span><span class="hl std">(x,</span> <span class="hl kwc">plot</span> <span class="hl std">=</span> <span class="hl num">FALSE</span><span class="hl std">)</span>
+   <span class="hl std">breaks</span> <span class="hl kwb">&lt;-</span> <span class="hl std">h</span><span class="hl opt">$</span><span class="hl std">breaks; nB</span> <span class="hl kwb">&lt;-</span> <span class="hl kwd">length</span><span class="hl std">(breaks)</span>
+   <span class="hl std">y</span> <span class="hl kwb">&lt;-</span> <span class="hl std">h</span><span class="hl opt">$</span><span class="hl std">counts; y</span> <span class="hl kwb">&lt;-</span> <span class="hl std">y</span><span class="hl opt">/</span><span class="hl kwd">max</span><span class="hl std">(y)</span>
+   <span class="hl kwd">rect</span><span class="hl std">(breaks[</span><span class="hl opt">-</span><span class="hl std">nB],</span> <span class="hl num">0</span><span class="hl std">, breaks[</span><span class="hl opt">-</span><span class="hl num">1</span><span class="hl std">], y, ...)</span>
+<span class="hl std">}</span>
+
+<span class="hl kwd">pairs</span><span class="hl std">(iris_plot,</span> <span class="hl kwc">pch</span><span class="hl std">=</span><span class="hl num">19</span><span class="hl std">,</span> <span class="hl kwc">diag.panel</span><span class="hl std">=panel.hist,</span><span class="hl kwc">col</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl str">&quot;red&quot;</span><span class="hl std">,</span><span class="hl str">&quot;blue&quot;</span><span class="hl std">,</span><span class="hl str">&quot;orange&quot;</span><span class="hl std">,</span><span class="hl str">&quot;green&quot;</span><span class="hl std">),</span>
+      <span class="hl kwc">labels</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl str">&quot;Longitud sépalo&quot;</span><span class="hl std">,</span><span class="hl str">&quot;Longitud pétalo&quot;</span><span class="hl std">,</span><span class="hl str">&quot;Ancho sépalo&quot;</span><span class="hl std">,</span><span class="hl str">&quot;Ancho pétalo&quot;</span><span class="hl std">))</span>
+</pre></div>
+</div><div class="rimage center"><img src="figure/unnamed-chunk-12-1.png" title="plot of chunk unnamed-chunk-12" alt="plot of chunk unnamed-chunk-12" class="plot" /></div></div>
+					</p>
+					
+					<p>Con los argumentos <code>mfrow</code> y <code>mfcol</code> de la función <code>par</code> podemos separar nuestro dispositivo de impresión en distintas partes, para así representar varias gráficas en una misma imagen. Son métodos muy prácticos para representar información sobre un dataset de manera muy visual.</p>
+					<p>
+<div class="chunk" id="unnamed-chunk-13"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">par</span><span class="hl std">(</span><span class="hl kwc">mfrow</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl num">1</span><span class="hl std">,</span><span class="hl num">3</span><span class="hl std">))</span>
+<span class="hl kwd">hist</span><span class="hl std">(trees</span><span class="hl opt">$</span><span class="hl std">Girth,</span><span class="hl kwc">col</span><span class="hl std">=</span><span class="hl str">&quot;green&quot;</span><span class="hl std">,</span><span class="hl kwc">density</span><span class="hl std">=</span><span class="hl num">50</span><span class="hl std">)</span>
+<span class="hl kwd">hist</span><span class="hl std">(trees</span><span class="hl opt">$</span><span class="hl std">Height,</span><span class="hl kwc">col</span><span class="hl std">=</span><span class="hl str">&quot;yellow&quot;</span><span class="hl std">,</span><span class="hl kwc">density</span><span class="hl std">=</span><span class="hl num">50</span><span class="hl std">)</span>
+<span class="hl kwd">hist</span><span class="hl std">(trees</span><span class="hl opt">$</span><span class="hl std">Volume,</span><span class="hl kwc">col</span><span class="hl std">=</span><span class="hl str">&quot;red&quot;</span><span class="hl std">,</span><span class="hl kwc">density</span><span class="hl std">=</span><span class="hl num">50</span><span class="hl std">)</span>
+</pre></div>
+</div><div class="rimage center"><img src="figure/unnamed-chunk-13-1.png" title="plot of chunk unnamed-chunk-13" alt="plot of chunk unnamed-chunk-13" class="plot" /></div></div>
+					</p>
+				</article>
+				
+				<article id="sectores_estrellas">
+					<h2>Diagramas de Sectores y de Estrellas</h2>
+					<p>Veamos ahora los diagramas de sectores, o de <i>tarta</i>, de ahí el nombre de la función para representarlos, <code>pie</code>. Volvamos al dataset de los motores de coches, y esta vez veamos el número de carburadores, para ver cuál de los valores se da con más y menos frecuencia.</p>
+					<p>
+<div class="chunk" id="unnamed-chunk-14"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">pie</span><span class="hl std">(</span><span class="hl kwd">table</span><span class="hl std">(mtcars</span><span class="hl opt">$</span><span class="hl std">carb),</span> <span class="hl kwc">main</span><span class="hl std">=</span><span class="hl str">&quot;Número de carburadores&quot;</span><span class="hl std">,</span>
+    <span class="hl kwc">col</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl str">&quot;green&quot;</span><span class="hl std">,</span><span class="hl str">&quot;red&quot;</span><span class="hl std">,</span><span class="hl str">&quot;orange&quot;</span><span class="hl std">,</span><span class="hl str">&quot;blue&quot;</span><span class="hl std">,</span><span class="hl str">&quot;pink&quot;</span><span class="hl std">,</span><span class="hl str">&quot;yellow&quot;</span><span class="hl std">),</span><span class="hl kwc">density</span><span class="hl std">=</span><span class="hl num">50</span><span class="hl std">)</span>
+</pre></div>
+</div><div class="rimage center"><img src="figure/unnamed-chunk-14-1.png" title="plot of chunk unnamed-chunk-14" alt="plot of chunk unnamed-chunk-14" class="plot" /></div></div>
+					</p>
+					<p>Por otra parte, el diagrama de estrellas realiza un diagrama en el que muestra la información de todas las variables, con el fin de poder compararlas entre ellas. En este caso, utilicemos el dataset <code>iris</code> que solo tienen 4 atributos y así tendremos una representación decente para entender este tipo de diagramas.</p>
+					
+					<p>
+<div class="chunk" id="unnamed-chunk-15"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">stars</span><span class="hl std">(iris_plot,</span> <span class="hl kwc">col.segments</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl str">&quot;red&quot;</span><span class="hl std">,</span><span class="hl str">&quot;blue&quot;</span><span class="hl std">,</span><span class="hl str">&quot;orange&quot;</span><span class="hl std">,</span><span class="hl str">&quot;green&quot;</span><span class="hl std">),</span>
+      <span class="hl kwc">draw.segments</span><span class="hl std">=</span><span class="hl num">TRUE</span><span class="hl std">,</span> <span class="hl kwc">key.loc</span> <span class="hl std">=</span> <span class="hl kwd">c</span><span class="hl std">(</span><span class="hl num">20</span><span class="hl std">,</span> <span class="hl num">1</span><span class="hl std">))</span>
+</pre></div>
+</div><div class="rimage center"><img src="figure/unnamed-chunk-15-1.png" title="plot of chunk unnamed-chunk-15" alt="plot of chunk unnamed-chunk-15" class="plot" /></div></div>
+					</p>
+				</article>
+				
+				<article id="tridimensional">
+					<h2>Representaciones Tridimensionales</h2>
+					<p>Para finalizar esta entrega, veamos distintos métodos de representación en tres dimensiones. Empecemos por la función <code>persp</code>, ya utilizada en la práctica anterior.</p>
+					
+					<p>
+<div class="chunk" id="unnamed-chunk-16"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl std">f</span><span class="hl kwb">=</span><span class="hl kwa">function</span><span class="hl std">(</span><span class="hl kwc">x</span><span class="hl std">,</span> <span class="hl kwc">y</span><span class="hl std">){</span>
+   <span class="hl std">r</span> <span class="hl kwb">=</span> <span class="hl kwd">sqrt</span><span class="hl std">(x</span><span class="hl opt">^</span><span class="hl num">2</span><span class="hl opt">+</span><span class="hl std">y</span><span class="hl opt">^</span><span class="hl num">2</span><span class="hl std">)</span>
+   <span class="hl kwd">return</span><span class="hl std">(</span><span class="hl num">10</span> <span class="hl opt">*</span> <span class="hl kwd">sin</span><span class="hl std">(r)</span><span class="hl opt">/</span><span class="hl std">r)</span>
+<span class="hl std">}</span>
+
+<span class="hl std">s</span><span class="hl kwb">=</span><span class="hl kwd">seq</span><span class="hl std">(</span><span class="hl opt">-</span><span class="hl num">10</span><span class="hl std">,</span> <span class="hl num">10</span><span class="hl std">,</span> <span class="hl kwc">by</span><span class="hl std">=</span><span class="hl num">0.5</span><span class="hl std">)</span>
+<span class="hl std">t</span><span class="hl kwb">=</span><span class="hl std">s</span>
+
+<span class="hl kwd">persp</span><span class="hl std">(</span><span class="hl kwc">x</span><span class="hl std">=s,</span> <span class="hl kwc">y</span><span class="hl std">=t,</span> <span class="hl kwc">z</span><span class="hl std">=</span><span class="hl kwd">outer</span><span class="hl std">(s, t, f),</span> <span class="hl kwc">theta</span> <span class="hl std">=</span> <span class="hl num">30</span><span class="hl std">,</span> <span class="hl kwc">phi</span> <span class="hl std">=</span> <span class="hl num">30</span><span class="hl std">,</span> <span class="hl kwc">col</span> <span class="hl std">=</span> <span class="hl str">&quot;orange&quot;</span><span class="hl std">)</span>
+</pre></div>
+</div><div class="rimage center"><img src="figure/unnamed-chunk-16-1.png" title="plot of chunk unnamed-chunk-16" alt="plot of chunk unnamed-chunk-16" class="plot" /></div></div>
+					</p>
+					
+					<p>Con la función <code>contour</code> realizaremos un mapa de nivel. Utilizaremos el dataset <code>volcano</code>, que almacena los valores de la altitud del volcán Maunga Whau.</p>
+					<p>
+<div class="chunk" id="unnamed-chunk-17"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl std">rx</span> <span class="hl kwb">&lt;-</span> <span class="hl kwd">range</span><span class="hl std">(x</span> <span class="hl kwb">&lt;-</span> <span class="hl num">10</span><span class="hl opt">*</span><span class="hl num">1</span><span class="hl opt">:</span><span class="hl kwd">nrow</span><span class="hl std">(volcano))</span>
+<span class="hl std">ry</span> <span class="hl kwb">&lt;-</span> <span class="hl kwd">range</span><span class="hl std">(y</span> <span class="hl kwb">&lt;-</span> <span class="hl num">10</span><span class="hl opt">*</span><span class="hl num">1</span><span class="hl opt">:</span><span class="hl kwd">ncol</span><span class="hl std">(volcano))</span>
+<span class="hl std">ry</span> <span class="hl kwb">&lt;-</span> <span class="hl std">ry</span> <span class="hl opt">+</span> <span class="hl kwd">c</span><span class="hl std">(</span><span class="hl opt">-</span><span class="hl num">1</span><span class="hl std">,</span> <span class="hl num">1</span><span class="hl std">)</span> <span class="hl opt">*</span> <span class="hl std">(</span><span class="hl kwd">diff</span><span class="hl std">(rx)</span> <span class="hl opt">-</span> <span class="hl kwd">diff</span><span class="hl std">(ry))</span><span class="hl opt">/</span><span class="hl num">2</span>
+
+<span class="hl std">tcol</span> <span class="hl kwb">&lt;-</span> <span class="hl kwd">terrain.colors</span><span class="hl std">(</span><span class="hl num">12</span><span class="hl std">)</span>
+<span class="hl kwd">plot</span><span class="hl std">(</span><span class="hl kwc">x</span> <span class="hl std">=</span> <span class="hl num">0</span><span class="hl std">,</span> <span class="hl kwc">y</span> <span class="hl std">=</span> <span class="hl num">0</span><span class="hl std">,</span> <span class="hl kwc">type</span> <span class="hl std">=</span> <span class="hl str">&quot;n&quot;</span><span class="hl std">,</span> <span class="hl kwc">xlim</span> <span class="hl std">= rx,</span> <span class="hl kwc">ylim</span> <span class="hl std">= ry,</span> <span class="hl kwc">xlab</span> <span class="hl std">=</span> <span class="hl str">&quot;&quot;</span><span class="hl std">,</span> <span class="hl kwc">ylab</span> <span class="hl std">=</span> <span class="hl str">&quot;&quot;</span><span class="hl std">)</span>
+<span class="hl std">u</span> <span class="hl kwb">&lt;-</span> <span class="hl kwd">par</span><span class="hl std">(</span><span class="hl str">&quot;usr&quot;</span><span class="hl std">)</span>
+<span class="hl kwd">rect</span><span class="hl std">(u[</span><span class="hl num">1</span><span class="hl std">], u[</span><span class="hl num">3</span><span class="hl std">], u[</span><span class="hl num">2</span><span class="hl std">], u[</span><span class="hl num">4</span><span class="hl std">],</span> <span class="hl kwc">col</span> <span class="hl std">= tcol[</span><span class="hl num">8</span><span class="hl std">],</span> <span class="hl kwc">border</span> <span class="hl std">=</span> <span class="hl str">&quot;red&quot;</span><span class="hl std">)</span>
+
+<span class="hl kwd">contour</span><span class="hl std">(x, y, volcano,</span> <span class="hl kwc">col</span> <span class="hl std">= tcol[</span><span class="hl num">2</span><span class="hl std">],</span> <span class="hl kwc">lty</span> <span class="hl std">=</span> <span class="hl str">&quot;solid&quot;</span><span class="hl std">,</span> <span class="hl kwc">add</span> <span class="hl std">=</span> <span class="hl num">TRUE</span><span class="hl std">,</span>
+                <span class="hl kwc">vfont</span> <span class="hl std">=</span> <span class="hl kwd">c</span><span class="hl std">(</span><span class="hl str">&quot;sans serif&quot;</span><span class="hl std">,</span> <span class="hl str">&quot;plain&quot;</span><span class="hl std">))</span>
+
+<span class="hl kwd">title</span><span class="hl std">(</span><span class="hl str">&quot;Mapa Topográfico del Volcán Maunga Whau&quot;</span><span class="hl std">,</span> <span class="hl kwc">font</span> <span class="hl std">=</span> <span class="hl num">4</span><span class="hl std">)</span>
+</pre></div>
+</div><div class="rimage center"><img src="figure/unnamed-chunk-17-1.png" title="plot of chunk unnamed-chunk-17" alt="plot of chunk unnamed-chunk-17" class="plot" /></div></div>
+					</p>
+					
+					<p>Finalmente, tendremos la función <code>image</code>, que se encarga de dibujar una gráfica con código de color o de escala de grises.</p>
+				</article>
+				
+				<p style="text-align:center;"><br><br><br><br>FIN</p>
+				
+			</section>
+		</section>
+		
+		
+		
+		<nav>
+			<p><strong>Índice</strong></p>
+			<ul>
+				<li><a href="#introduccion">Introducción</a></li>
+				<li><a href="#plot_text_symbols"><code>plot</code>, <code>text</code> y <code>symbols</code></a></li>
+				<li><a href="#hist_curve"><code>hist</code> y <code>curve</code></a></li>
+				<li><a href="#polygon_lines_points"><code>polygon</code>, <code>lines</code> y <code>points</code></a></li>
+				<li><a href="#barplot_boxplot"><code>barplot</code> y <code>boxplot</code></a></li>
+				<li><a href="#pairs_multiple"><code>pairs</code> y gráficos múltiples</a></li>
+				<li><a href="#sectores_estrella">Diagramas Sectores y Estrella</a></li>
+				<li><a href="#tridimensional">Representaciones Tridimensionales</a></li>
+			</ul>
+		</nav>
+	
+		<section id="extra">
+			<p><strong>Simón López Vico</strong></p>
+			<p>Universidad de Granada</p>
+			<p>Ingeniería Informática y Matemáticas</p>
+		</section>
+		
+		<footer>
+			<p>Simón López Vico</p>
+			<p>simondelosbros@correo.ugr.es</p>
+		</footer>
+	
+</body>
+
+</html>

@@ -1,0 +1,87 @@
+
+<!-- saved from url=(0119)https://webmailest.ugr.es/?_task=mail&_action=get&_mbox=INBOX&_uid=5710&_token=ieL52Tei8TUCVOszE4MdOv1sLkkHg40K&_part=2 -->
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>Enunciados final</title>
+	<!-- meta ignored --> 
+
+	
+
+	<!-- script not allowed -->
+
+<link rel="stylesheet" type="text/css" href="./final_ec_files/embed.min.css">
+<script type="text/javascript">
+/* <![CDATA[ */
+
+rcmail.set_env({"orig_task":null});
+/* ]]> */
+</script>
+
+
+</head>
+
+<body>
+<b>Instrucciones</b>
+<ul>
+<li> Es obligatorio realizar el ejercicio con una plantilla libre, no una creada por el propio alumno. Debes identificar perfectamente de qué lugar has tomado la plantilla. 
+		Y si esta lo requiere debes incorporar las condiciones de <i>copyright</i> o cualquier otra que se imponga.	   
+</li><li> Indica en la plantilla tus datos personales.
+</li><li> Se valora la calidad de la aplicación de la misma. 
+</li><li> Debes incluir un índice que conduzca a cada uno de los apartados. 
+</li><li> Debes incluir un apartado de conclusiones. 
+</li><li> Aparte de  los libros de la instalación inicial de R solo se podrá instalar <i>knitr</i>. Todo lo demás debe ser de creación propia.
+</li><li> Todo el ejercicio debe realizarse en una carpeta (cuyo nombre es el de la persona que lo realiza) y contener un archivo denominado 
+		<b>1.Rhtml</b> que cuando se pasa por <i>knitr</i> produce el resultado del ejercicio. Se valorará tanto ese archivo como el del resultado. 
+</li><li> Añade todos los comentarios que estimes oportunos y los parámetros que creas necesarios para cada función. 
+</li><li> Explica convenientemente todos los pasos que realizas.		  
+</li><li> Debes incluir un compromiso de que el trabajo desarrollado es original tuyo.
+</li></ul>
+
+<ol>
+<li> Considera en el plano el recinto cerrado finito definido por las funciones \(y=x^2\) y \(100 x=y^2\) al cual pertenece el punto de coordenadas 
+\((2,12)\). Realiza un gráfico del mismo.							  
+
+</li><li> Construye una función que indique si un punto cualquiera del plano pertenece al interior de ese recinto, al borde o al exterior. 
+Comprueba que \((2,12)\) es interior. Aplícala a los puntos \((0,0)\), \((-1,-1)\) y \((30,30)\) y comenta los resultados.
+
+</li><li> Construye una función que seleccione un valor, que llamamos \(A\), de una distribución uniforme en el intervalo (-1/100,1/100), y otro, que llamamos \(B\),
+de una distribución normal de media 0 y varianza 1/100. Añade \((A,B)\) al punto \((2,12)\) y obtendrás un punto que llamaremos
+ \(P_0\).
+
+
+
+</li><li> Considera el recorrido aleatorio con barrera absorbente definido del siguiente modo: sea un punto que en el tiempo \(t=0\) 
+comienza en el origen,  \(P_0\) del apartado anterior, y se desplaza del siguiente modo:
+	<ol>
+		<li> En cada tiempo \(t, t=1,2,\ldots\) se lanza un dado dos veces y una moneda dos veces.
+		</li><li> Si la suma de puntos de los dados es superior a \(5\), 
+		la coordenada \(x\) del punto se modifica para que aumente \(5\) centésimas, si no, 
+					disminuye \(5\) centésimas.
+		</li><li> Si las dos monedas son cara, la coordenada \(y\) del punto se modifica para que aumente \(5\) centésimas, 
+					si las dos son cruz, permanece inalterable y si no, 
+					disminuye \(5\) centésimas.
+		</li><li> A continuación el punto salta hasta sus nuevas coordenadas
+		</li><li> El proceso finaliza si, tras el salto, el punto alcanza el perímetro de la región o el exterior de la misma
+	</li></ol>
+
+    Escribe una función que simule el movimiento del punto y devuelva, para un número máximo, \(M\), de pasos:
+	<ol>
+		<li>        La progresión aleatoria definida
+		</li><li>        Cuantos pasos han sido necesarios para llegar al límite o NA si no lo consigue
+	</li></ol>
+</li><li>    Realiza una simulación concreta del proceso con \(M=10000\) y represéntala gráficamente (mediante líneas) sobre la gráfica de la región
+</li><li> 	Realiza esta misma representación gráfica centrada en el punto de salida y con una anchura y altura de 2 unidades.
+</li><li>    Realiza cuatro simulaciones concretas del proceso con \(M=6000\) y represéntalas gráficamente sobre la gráfica de la región utilizando colores distintos para cada una
+</li><li>    Escribe una función con un argumento que permita repetir un número de veces, \(n\), este proceso y 
+	devuelva un vector con el número de pasos necesarios para salir del recinto en cada repetición.
+
+</li><li> Analiza el vector que se obtiene con la función anterior para \(n=1000\) y \(M=3000\) y comenta cómo es la distribución 
+del parámetro <i>pasos necesarios para llegar al límite</i> en este proceso.
+¿Es \(M\) suficientemente grande? A la luz de lo obtenido, indica razonadamente si habría que usar un valor mayor o no, y en caso afirmativo, repítelo alterando el valor de \(M\).
+
+</li></ol>
+
+
+
+
+</body></html>

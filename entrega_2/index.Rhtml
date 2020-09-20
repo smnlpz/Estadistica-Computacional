@@ -1,0 +1,712 @@
+<!DOCTYPE HTML>
+<html lang="es">
+
+<head>
+	<title>Entrega 2</title>
+	<meta charset="UTF-8"/>
+	<link rel="icon" type="image/png" href="resources/images/icon.png"/>
+	<link rel="stylesheet" type="text/css" href="resources/css/style.css" />
+	<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.0.1/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+		<header>
+			<section id="texto">
+				<h1>Estadística Computacional: <span id="entrega_2">Entrega 2</span></h1>
+				<h3>Uso del paquete Knitr para la generación automática de código HTML</h3>
+			</section>
+			<section id="ugr">
+				<img id="logo_ugr" src="./resources/images/ugr.png" alt="UGR">
+			</section>
+		</header>
+
+		<section id="wrapper">
+			<section id="content">
+				<article id="introduccion">
+					<h2>Introducción</h2>
+					<p>En este informe mostraremos los distintos ejercicios realizados para la <i>Entrega 1</i> de la asignatura Estadística Computacional. Constará de distintos apartados, diferenciados por el epígrafe al que pertenezcan en el libro de R proporcionado por el profesor.</p>
+					<p>No todos los epígrafes tienen trabajo realizado, algunos de ellos tienen un desarrollo más profundo ya que el contenido lo requiere. Por otra parte, algunos apartados constarán de funciones más complejas mientras que otros se limitarán a mostrar gráficas.</p>
+					<p>Por otra parte, comentar que todo el trabajo se ha realizado sin plantilla HTML ni CSS, ya que he cursado la asignatura Programación Web del grado en Ingeniería Informática y me he visto capaz de realizar la web desde cero sin problema. Además, se podrían separar todos los apartados en distintos archivos y enlazarlos mediante hipervínculos, pero según he entendido de la frase:
+					<p style="margin-left:50px; margin-right:50px;"><i>"Consiste en crear en una carpeta un archivo .Rhtml que permita presentar todos los ejercicios que ya has realizado en el bloque anterior"</i>,</p>
+					<p>solo he de crear un archivo, que generará un único fichero HTML. Así, se ha creado un índice que nos llevará a cada uno de los apartados que aparecen en la página</p>
+				</article>
+				
+				<article id="simulacion">
+					<h2>Simulación de extracción de cartas de una baraja y otras simulaciones</h2>
+					<p>Para este epígrafe se han realizado diversos estudios sobre la distribución de tres simulaciones: obtener 4 de ases en una baraja (ya implementado en el libro de R), obtener \(N\) caras lanzando una moneda y obtener \(N\) seises lanzando un dado. Además, se ha implementado una función que calculará cuantas veces hay que llamar a la función de extracción para obtener el resultado deseado en menos de \(M\) intentos.</p>
+					<p>Ya que todas estas funciones dependen de el método <code>sample</code>, que devuelve resultados aleatorios, fijaremos una semilla para obtener siempre los mismos resultados.</p>
+					<p>
+					<!--begin.rcode
+					set.seed(12345)
+					end.rcode-->
+					</p>
+					<article id="ases">
+						<h3>Extraer cuatro Ases de una baraja</h3>
+						<p>Consiste en realizar un muestreo con reemplazamiento de una baraja de 52 cartas, hasta obtener los cuatro ases e indicar el número de extracciones necesarias. Se utiliza la función <code>sample</code> para realizar cada extracción. El código de la extracción es el siguiente:</p>
+						<p>
+						<!--begin.rcode
+						CuatroAses = function(Mostrar = F,Maximo=1000){
+						  Extracciones = 0
+						  Resultado = 1:Maximo
+						  Ases = c(0,0,0,0)
+						  repeat{
+						    if (Maximo <= Extracciones){
+						      if(Mostrar){
+						        cat("No he podido obtener cuatro ases en ",Extracciones,"extracciones. \n")
+						      }
+						      return(list(E = NA, R = Resultado, Conseguido=F))
+						    }
+						  
+						    Extracciones = Extracciones + 1
+						    SacoUna = sample(52, 1)
+						    Resultado[Extracciones] = SacoUna
+						    if(SacoUna %% 13 != 1)  {next}        # %% es el módulo
+						    Ases[(SacoUna -1) %/% 13 + 1] = 1     # %/% es la división entera
+						    if(sum(Ases)==4)  {break}
+						  }
+						  
+						  length(Resultado)=Extracciones
+						  if(Mostrar){
+						    cat("He necesitado", Extracciones,"extracciones para obtener cuatro ases.\n")
+						  }
+						  
+						  return(list(E = Extracciones, R = Resultado, Conseguido=T))
+						}
+						end.rcode-->
+						</p>
+						<p>A continuación, hacemos varias llamadas a la función para comprobar su correcto funcionamiento:</p>
+						<p>
+						<!--begin.rcode
+						resultado=CuatroAses(Mostrar=T)
+						resultado=CuatroAses(Mostrar=T, Maximo=50)
+						end.rcode-->
+						</p>
+						
+						<p>(Utilizamos la variable <code>resultado</code> para que no nos muestre por pantalla todos los datos de la ejecución, pues no nos servirán por el momento)</p>
+						
+						<p>Tras esto, escribimos una función que nos muestre la distribución que sigue nuestra extracción de cartas, la cuál se encargará de llamar <code>n</code> veces al método <code>CuatroAses()</code> y devolverá un vector con el número de extracciones que se han necesitado en cada llamada.</p>
+						<p>
+						<!--begin.rcode
+						DistriAses = function(n = 5,Maximo=1000) {
+						  Saco = vector(length=n)
+						  for(i in 1:n)
+						    Saco[i] = CuatroAses(F,Maximo)$E
+						  Saco
+						}
+						end.rcode-->
+						</p>
+						
+						<p>Con la función <code>summary</code> implementada por defecto en R podremos ver un resumen de los resultados obtenidos por nuestra función <code>DistriAses</code>, con diversos elementos estadísticos asociados a nuestros resultados:</p>
+						<p>
+						<!--begin.rcode
+						DistribucionAses=DistriAses(n=2000)
+						summary(DistribucionAses)
+						end.rcode-->
+						</p>
+						<p>Más adelante veremos algunas gráficas referentes a esta distribución.</p>
+						<p>Como hablábamos anteriormente, se ha desarrollado una función que llamará al método principal, <code>CuatroAses</code>, tantas veces como sea necesario hasta extraer cuatro ases en menos de <code>n</code> extracciones. El código es el siguiente:</p>
+						<p>
+						<!--begin.rcode
+						CuantasLlamadasNecesitaAses = function(n=20) {
+						  cuantas=0
+						  repeat{
+						    necesitadas = CuatroAses()$E
+						    cuantas=cuantas+1
+						    if(necesitadas<=n){
+						      break
+						    }
+						  }
+						  cat("He necesitado llamar a CuatroAses() ", cuantas, " veces para
+						       extraer 4 ases en menos de ", n, " extracciones.\n")
+						}
+						end.rcode-->
+						</p>
+						<p>A continuación vemos distintas llamadas a esta función disminuyendo el valor de <code>n</code>. Debido a la aleatoridad de las ejecuciones, el número de llamadas a <code>CuatroAses</code> no tiene por qué descender cuando disminuyamos el valor de <code>n</code>.</p>
+						<p>
+						<!--begin.rcode
+						CuantasLlamadasNecesitaAses(10)
+						CuantasLlamadasNecesitaAses(9)
+						CuantasLlamadasNecesitaAses(8)
+						CuantasLlamadasNecesitaAses(7)
+						CuantasLlamadasNecesitaAses(6)
+						CuantasLlamadasNecesitaAses(5)
+						CuantasLlamadasNecesitaAses(4)
+						end.rcode-->
+						</p>
+						<p>En el último caso, estaremos intentando obtener 4 ases seguidos.</p>
+						<p>Por otra parte, podemos implementar una función en la que se busque obtener 4 ases sin reemplazamiento en la baraja, por lo que el máximo número de extracciones será 52 (el número de cartas en una baraja). A continuación mostramos el código de la función, así como el asociado al cálculo de su distribución.</p>
+						<p>
+						<!--begin.rcode
+						CuatroAses.Sin =function(Mostrar = F){
+						  Ases = 0
+						  Resultado = sample(52)
+						  
+						  for (i in 1:52){
+						    if(Resultado[i] %% 13 != 1) {next}	# %% es el módulo
+						    Ases = Ases+1
+						    if(Ases==4) {break}
+						  }
+						  
+						  if(Mostrar){
+						    cat("He necesitado", i, "extracciones para obtener cuatro ases\n")
+						  }
+						  
+						  return(list(E = i,R = Resultado[1:i]))
+						}
+						
+						
+						DistriAses.Sin = function(n = 5){
+						  Saco = vector(length=n)
+						    for(i in 1:n)
+						      Saco[i] = CuatroAses.Sin()$E
+						    Saco
+						}
+						end.rcode-->
+						</p>
+						<p>Notar la que la función <code>CuatroAses.Sin</code> no tiene el atributo <code>Maximo</code> que hemos visto anteriormente, ya que esta función siempre acabará encontrando los cuatro ases al no haber reemplazamiento. Ejecutando estas funciones obtendremos:</p>
+						<p>
+						<!--begin.rcode
+						resultado=CuatroAses.Sin(Mostrar=T)
+						DistribucionAses.Sin=DistriAses.Sin(n=2000)
+						summary(DistribucionAses.Sin)
+						end.rcode-->
+						</p>
+						
+						<p>Para finalizar este apartado, veamos un histograma para la extracción de ases con y sin reemplazamiento, ejecutando las siguientes funciones:</p>
+						<p>
+						<!--begin.rcode fig.align='center'
+						hist(DistribucionAses, main="Histograma para la extracción de cartas
+						CON reemplazamiento", xlab="Número de extracciones hasta obtener 4 ases",
+						ylab="Frecuencia", col="orange", breaks=20)
+						hist(DistribucionAses.Sin, main="Histograma para la extracción de cartas
+						SIN reemplazamiento", xlab="Número de extracciones hasta obtener 4 ases",
+						ylab="Frecuencia", col="yellow", breaks=20)
+						end.rcode-->
+						</p>
+						<p>Estos histogramas muestran la frecuencia del número de extracciones que hemos necesitado para obtener 4 ases; podemos ver que para la extracción con reemplazamiento el número medio de extracciones realizadas está en torno al 100, mientras que para la extracción sin reemplazamiento, la frecuencia media tiende a 50.</p>
+					</article>
+					
+					
+					
+					
+					<article id="monedas">
+						<h3>Obtener \(N\) caras en una moneda</h3>
+						<p>Al igual que en el anterior apartado, escribiremos una función que se encargue de lanzar una moneda y contar el número de veces que se obtiene cara. Se lanzará la moneda hasta obtener <code>n</code> caras o hasta llega a un máximo de lanzamientos, <code>tiradas</code>. El código, junto a un ejemplo de ejecución, se muestra a continuación:</p>
+						<p>
+						<!--begin.rcode
+						ObtenerNCaras = function(mostrar=F,N=5,tiradas=20){
+						  nCaras=0
+						  nombres_resultados=c("Cara","Cruz")
+						  obtenidos=array()
+						  for(i in 1:tiradas){
+						    lanzo = sample(2, 1)
+						    obtenidos[i]=nombres_resultados[lanzo]
+						    if(lanzo==1)	{nCaras=nCaras+1}
+						    if(nCaras==N){
+						      if(mostrar){
+						        cat("He obtenido", N ," caras en ", i ," lanzamientos.\n")
+						        return(list(necesitadas=i, resultado=obtenidos))
+						      }else{
+						        return(i)
+						      }
+						    }
+						  }
+						  
+						  if(mostrar){
+						    cat("No he conseguido obtener ", N ," caras en ", tiradas, " lanzamientos.\n")
+						    return(list(necesitadas=tiradas, resultado=obtenidos))
+						  }else{
+						    return(tiradas)
+						  }
+						}
+						
+						
+						ObtenerNCaras(mostrar=T, N=10, tiradas=20)
+						end.rcode-->
+						</p>
+						
+						<p>Al igual que en el caso de los ases, esta función está implementada junto a la utilizada para obtener su distribución y el método que calculará el número de veces que hay que llamar a <code>ObtenerNCaras</code> para obtener un número determinado de caras en menos de <code>tiradas</code> lanzamientos.</p>
+						
+						<p>
+						<!--begin.rcode
+						DistriCaras = function(intentos=5,caras=5,Maximo=1000) {
+						  Saco = vector(length=intentos)
+						  for(i in 1:intentos)
+						    Saco[i] = ObtenerNCaras(F,caras,Maximo)
+						  Saco
+						}
+						
+						DistribucionMonedas.5caras=DistriCaras(2000)
+						summary(DistribucionMonedas.5caras)
+						DistribucionMonedas.20caras=DistriCaras(2000,20)
+						summary(DistribucionMonedas.20caras)
+						
+						end.rcode-->
+						</p>
+						<p>(Con estas distribuciones mostraremos histogramas más adelante)<br><br></p>
+						<p>
+						<!--begin.rcode						
+						CuantasLlamadasNecesitaMonedas = function(ncaras=5,tiradas=10) {
+						  cuantas=0
+						  repeat{
+						    necesitadas = ObtenerNCaras(F,ncaras,1000)
+						    cuantas=cuantas+1
+						    if(necesitadas<=tiradas){
+						      break
+						    }
+						  }
+						  cat("He necesitado llamar a ObtenerNCaras() ", cuantas, " veces 
+						  para obtener ", ncaras, " caras en menos (o igual) de ", tiradas," 
+						  tiradas.\n")
+						}
+						
+						CuantasLlamadasNecesitaMonedas(10,13)
+						CuantasLlamadasNecesitaMonedas(10,12)
+						CuantasLlamadasNecesitaMonedas(10,11)
+						CuantasLlamadasNecesitaMonedas(10,10)
+
+						end.rcode-->
+						</p>
+						<p>Al igual que en el caso de la extracción de cartas, la función <code>CuantasLlamadasNecesitaMonedas(10,10)</code> comprobará el número de veces que hay que llamar al método principal para obtener 10 caras seguidas.</p>
+						<p>Para terminar, veamos los histogramas de las frecuencias asociadas a 2000 llamadas a la función <code>ObtenerNCaras</code>, con \(N=5\) y \(N=20\).</p>
+						<p>
+						<!--begin.rcode fig.align='center'
+						hist(DistribucionMonedas.5caras, main="Histograma para el
+						lanzamiento de monedas", xlab="Número de lanzamientos hasta obtener 5 caras",
+						ylab="Frecuencia", col="blue", breaks=20)
+						end.rcode-->
+						</p>
+						<p>En este primer gráfico podemos ver que, aunque haya un frecuencia alta para cinco lanzamientos, el caso más común está en torno a 10 lanzamientos, que es lo más normal, pues hay un 50% de probabilidad de obtener cara o cruz, y por tanto en 10 lanzamientos es probable que 5 sean caras. Notar que hay casos en los que hay que lanzar la moneda hasta mas de 25 veces, por lo que la probabilidad del 50% no totalmente fiable.</p>
+						<p>
+						<!--begin.rcode fig.align='center'
+						hist(DistribucionMonedas.20caras, main="Histograma para el
+						lanzamiento de monedas", xlab="Número de lanzamientos hasta obtener 20 caras",
+						ylab="Frecuencia", col="grey", breaks=20)
+						end.rcode-->
+						</p>
+						<p>Al igual que en el caso anterior, lo más común es obtener 20 cara realizando en torno a 40 lanzamientos, por el mismo argumento utilizado para el anterior histograma.</p>
+					</article>
+					
+					
+					
+					
+					<article id="dados">
+						<h3>Obtener \(N\) seises en un dado</h3>
+						<p>Las funciones definidas para obtener \(N\) seises y sus asociadas (distribución y número de llamadas) son iguales a la que se ha implementado para las monedas, modificando el intervalo del que obtendremos valores con la función <code>sample</code>. Así, el código es el siguiente:</p>
+						<p>
+						<!--begin.rcode
+						##########################################################
+						
+						ObtenerNSeisEnDado = function(mostrar=F,N=5,tiradas=20){
+						  nSeises=0
+						  obtenidos=array()
+						  for(i in 1:tiradas){
+						    obtenidos[i]=sample(6, 1)
+						    if(obtenidos[i]==6)	{nSeises=nSeises+1}
+						    if(nSeises==N){
+						      if(mostrar){
+						        cat("He obtenido", N ," seis en ", i ," lanzamientos 
+						        del dado.\n")
+						        return(list(necesitadas=i, resultado=obtenidos))
+						      }else{
+						        return(i)
+						      }
+						    }
+						  }
+						  if(mostrar){
+						    cat("No he conseguido obtener ", N ," seis en 
+						    ", tiradas, " lanzamientos del dado.\n")
+						    return(list(necesitadas=tiradas, resultado=obtenidos))
+						  }else{
+						    return(tiradas)
+						  }
+						}
+						
+						##########################################################
+						
+						DistriDado = function(intentos=5,seises=5,Maximo=1000) {
+						  Saco = vector(length=intentos)
+						  for(i in 1:intentos)
+						    Saco[i] = ObtenerNSeisEnDado(F,seises,Maximo)
+						  Saco
+						}
+						
+						##########################################################
+						
+						CuantasLlamadasNecesitaDado = function(nseises=5,tiradas=10) {
+						  cuantas=0
+						  repeat{
+						    necesitadas = ObtenerNSeisEnDado(F,nseises,1000)
+						    cuantas=cuantas+1
+						    if(necesitadas<=tiradas){
+						      break
+						    }
+						  }
+						  cat("He necesitado llamar a ObtenerNSeisEnDado() ", cuantas, " 
+						       veces para obtener ", nseises, " seis en menos (o igual) de 
+						       ", tiradas, " tiradas del dado.\n")
+						}
+						
+						##########################################################
+						end.rcode-->
+						</p>
+						<p>A continuación, podemos ver un correcto funcionamiento de nuestro código y guardaremos la distribución de obtener 15 seises para ver un resumen de los datos obtenidos y mostrar un histograma más adelante:</p>
+						<p>
+						<!--begin.rcode
+						resultado=ObtenerNSeisEnDado(mostrar=T)
+						DistribucionDado=DistriDado(intentos=2000,15)
+						summary(DistribucionDado)
+						end.rcode-->
+						</p>
+						<p>Finalmente, el histograma para la distribución calculada es:</p>
+						<p>
+						<!--begin.rcode fig.align='center'
+						hist(DistribucionDado, main="Histograma para el lanzamiento de
+						dados", xlab="Número de lanzamientos hasta obtener 15 seises",
+						ylab="Frecuencia", col="red", breaks=20)
+						end.rcode-->
+						</p>
+						<p>Tal como se muestra en la media calculada por <code>summary</code>, la distribución se centra en torno a 80-90 lanzamientos.</p>
+					</article>
+					<article id="deduccion">
+						<h3>Deducciones a partir de los resultados obtenidos</h3>
+						<p>Utilizando todos los resultados calculados anteriormente con las funciones <code>Distri[Objeto]</code>, <code>summary</code> y <code>hist</code>, podemos ver que todas las distribuciones siguen una distribución normal centrada en la media. Esto ha de ser debido a que el método de R <code>sample</code> devuelva número aleatorios basándose en una distribución normal, haciendo así que las funciones que hemos desarrollado mantengan esa distribución normal.</p> 
+						<p>Una vez hemos terminado este apartado, borremos todas las variables que hemos utilizado ya que en adelante no las necesitaremos.</p>
+						<p>
+						<!--begin.rcode
+						rm(list=ls())
+						end.rcode-->
+					</article>
+				</article>
+				
+				<article id="3.5.7-3.5.8">
+					<h2>Función en una cuadrı́cula y Procesos no lineales</h2>
+					<p>En este apartado veremos los epígrafes 3.5.7 y 3.5.8 con el fin de familiarizarnos con las funciones para mostrar gráficas por pantalla. En el primero de estos epígrafes, definiremos una función para calcular la distancia de \(N\) puntos dados en dos dimensiones al origen utilizando el producto exterior. El código para esto será simple.</p>
+					<p>
+					<!--begin.rcode
+					distancia.origen.producto_exterior = function(x,y){
+					  outer(x,y,function(x,y) sqrt(x^2+y^2))
+					}
+					
+					distancia.origen.producto_exterior(-1:1,3:5)
+					end.rcode-->
+					</p>
+					<p>Con todo esto, nos disponemos a dibujar un gráfica en tres dimensiones con la función <code>persp</code>, donde dos ejes serán los valores \(x\) e \(y\) pasados a la función de distancia, y el eje restante representará la distancia entre dichos puntos. Para hacer más agradable a la vista la gráfica mostrada, cambiaremos el ángulo de visión (<code>theta=30, phi=30</code>) así como el color (<code>col="orange"</code>) y le daremos una ligera sombra (<code>shade=0.2</code>).</p>
+					<p>
+					<!--begin.rcode fig.align='center'
+					X=distancia.origen.producto_exterior(-12:10,-3:24)
+					persp(X, main="Distancias", theta=30, phi=30, col="orange", shade=0.2)
+					end.rcode-->
+					</p>
+					<p>En el epígrafe 3.5.8 se definen tres funciones que corresponden a procesos no lineales descritos en Dong que, de forma sencilla, definen estructuras complejas; vamos a estudiar cómo funciona la función <code>plot</code> sobre estos procesos no lineales. Comenzamos definiendo las tres funciones a representar.</p>
+					<p>
+					<!--begin.rcode
+					dong1=function(numero = 100){
+					  x = vector(mode = "numeric", length = numero)
+					  y = vector(mode = "numeric", length = numero)
+					  x[1] = 1
+					  y[1] = 1
+
+					  for(i in 2:numero){
+					    if(sample(2,1) == 2)     {m = 1}
+					    else                     {m = -1}
+					    x[i] = 0.5 * x[i - 1] + 0.5 * y[i - 1] + m
+					    y[i] = -0.5 * x[i - 1] + 0.5 * y[i - 1] + m
+					  }
+					  return(list(x = x[2:numero], y = y[2:numero]))
+					}
+
+					dong2=function(numero = 100){
+					  x = vector(mode = "numeric", length = numero)
+					  y = vector(mode = "numeric", length = numero)
+					  x[1] = 1
+					  y[1] = 1
+					  
+					  for(i in 2:numero){
+					    a = sample(3,1)
+					    if(a == 1){
+					      m = 0
+					      n = 0
+					    }else{
+					      if(a == 2){
+					        m = 0.5
+					        n = 0
+					      }else{
+					        m = 0.25
+					        n = 0.5
+					      }
+					    }
+					    x[i] = 0.5 * x[i - 1] + m
+					    y[i] = 0.5 * y[i - 1] + n
+					  }
+					  return(list(x = x[2:numero], y = y[2:numero]))
+					}
+					
+					dong3=function(numero = 100){
+					  x = vector(mode = "numeric", length = numero)
+					  y = vector(mode = "numeric", length = numero)
+					  x[1] = 1
+					  y[1] = 1
+					  
+					  for(i in 2:numero){
+					    a = sample(100,1)
+					    if(a == 1){
+					      x[i] = 0
+					      y[i] = 0.25 * y[i - 1]
+					    }else{
+					      if(a <= 86){
+					        x[i] = 0.85 * x[i - 1] + 0.04 * y[i - 1]
+					        y[i] = -0.04 * x[i - 1] + 0.85 * y[i - 1] + 1.6
+					      }else{
+					        if(a <= 93){
+					          x[i] = 0.2 * x[i - 1] - 0.26 * y[i - 1]
+					          y[i] = 0.26 * x[i - 1] + 0.22 * y[i - 1]
+					        }else{
+					          x[i] = -0.15 * x[i - 1] + 0.28 * y[i - 1]
+					          y[i] = 0.26 * x[i - 1] + 0.24 * y[i - 1] + 1
+					        }
+					      }
+					    }
+					  }
+					  return(list(x = x[2:numero], y = y[2:numero]))
+					}					
+					end.rcode-->
+					</p>
+					
+					<p>A continuación mostraremos los distintos valores generados por las funciones de los procesos no lineales representando cada uno de ellos con un punto; para ello, utilizaremos la función <code>plot</code>, a la que especificaremos el color de los puntos así como el título y el nombre asociado a cada eje de coordenadas. El resultado es el siguiente:</p>					
+					<p>
+					<!--begin.rcode fig.align='center'
+					plot(dong1(), main="Función dong1", xlab="x", ylab="y", type="p", col="darkgoldenrod4")
+					plot(dong2(), main="Función dong2", xlab="x", ylab="y", type="p", col="darkblue")
+					plot(dong3(), main="Función dong3", xlab="x", ylab="y", type="p", col="darkgreen")
+					end.rcode-->
+					</p>
+					<p>Para terminar, como en el apartado anterior, borremos las variables utilizadas.</p>
+					<p>
+					<!--begin.rcode
+					rm(list=ls())
+					end.rcode-->
+				</article>
+				
+				<article id="busqueda_entorno">
+					<h2>Lista de búsqueda y entornos</h2>
+					<p>En este apartado aprenderemos a gestionar las librerías a utilizar en nuestros programas, así como a visualizar las que tenemos instaladas; para esto último, utilizaremos el comando <code>search</code>, que nos muestra todos los lugares donde se encuentran objetos.</p>
+					<p>
+					<!--begin.rcode
+					search()
+					end.rcode-->
+					</p>
+					<p>Podemos ver que, entre todos los paquetes base instalados, tenemos el paquete <code>knitr</code>, el cuál estamos utilizando actualmente para <i>compilar</i> este código Rhtml. Para instalarlo, hemos ejecutado previamente <code>install.packages("knitr", dependencies = TRUE)</code> (realmente esta explicación de instalación correspondría al apartado <a href="#library">Función <code>library</code></a>), y tras ello lo hemos puesto en funcionamiento con <code>library(knitr)</code>. Así, podemos utilizar todas las funcionalidades de <code>knitr</code>, y una vez terminemos de utilizar este paquete, lo eliminaremos de la lista con <code>detach</code>.</p>
+					<p>
+					<!--begin.rcode
+					detach(package:knitr)
+					search()
+					end.rcode-->
+					</p>
+					<p>
+					<!--begin.rcode include=FALSE
+					library(knitr)
+					end.rcode-->
+					</p>
+				</article>
+				
+				<article id="lectura">
+					<h2>Lectura de hojas de datos</h2>
+					<p>En este apartado vamos a aprender a leer datos desde un fichero para almacenarlos en un dataframe y procesarlos; concretamente, leeremos los ficheros <i>Datos.txt</i> y <i>Datos2.txt</i> proporcionados por el profesor. Para ello, necesitaremos funciones que lean ficheros CSV.</p>
+					<p>Las funciones <code>read.csv</code> y <code>read.csv2</code> hacen exactamente lo mismo, solo que una de ellas está diseñada para los países que utilizan la coma como punto decimal y otra para los que separan los decimales con un punto. Aparte, la manera de separar los datos entre columnas difiere para cada función (coma o punto y coma).</p>
+					<p>
+					<!--begin.rcode
+					datos <- read.csv("./resources/data/Datos.txt")
+					datos2 <- read.csv("./resources/data/Datos2.txt", header=TRUE, sep=" ")
+					end.rcode-->
+					</p>
+					<p>Como podemos ver, para guardar el primero de nuestros ficheros a leer nos basta con usar la función <code>read.csv</code> sin parámetros adicionales, mientras que para el segundo fichero hemos de avisar que la primera lı́nea del archivo contiene los nombres de las variables (<code>header=TRUE</code>) y que el separador entre valores es el espacio (<code>sep=" "</code>).</p>
+					
+					<article id="datos">
+						<h3>Datos.txt</h3>
+						<p>Una vez almacenados todos los datos, procedamos al estudio de éstos. Empecemos por el primero de los ficheros leídos; veamos qué contiene.</p>
+						<p>
+						<!--begin.rcode
+						head(datos,4)
+						summary(datos)
+						end.rcode-->
+						</p>
+						<p>Vemos que el fichero contiene una serie de instancias, correspondientes a distintas personas, 20 hombres y 16 mujeres, de entre 21 y 25 años, en las que se especifica el peso y la altura de cada individuo. Para ver la relación entre las distintas variables y los distintos valores, realicemos varias gráficas. Empecemos mostrando una matriz de <i>scatter plots</i>, donde podremos ver representados los valores de todas las instancias y la relación entre ellos:</p>
+						<p>
+						<!--begin.rcode fig.align='center'
+						plot(datos, col=c("red","blue","orange","green"), pch=19)
+						end.rcode-->
+						</p>
+						<p>Tras esto, podemos ver un histograma para cada uno de los atributos del dataframe, que mostraremos en una sola imagen utilizando la orden <code>layout</code>.</p>
+						<p>
+						<!--begin.rcode fig.align='center'
+						layout(matrix(c(1,1,2,3), 2, 2, byrow = TRUE))
+						hist(datos$Altura, main="Histograma Altura", xlab="Altura en cm", col="orange")
+						hist(datos$Peso, main="Histograma Peso", xlab="Peso en kg", col="blue")
+						hist(datos$Edad, main="Histograma Edad", xlab="Edad", col="green")
+						end.rcode-->
+						</p>
+						<p>Con esto podemos ver que la mayor parte de instancias almacenadas en el dataframe tienen 21-22 años. Para continuar este estudio, podemos dibujar un diagrama de caja, que representará nuestros datos a través de sus cuartiles.</p>
+						<p>
+						<!--begin.rcode fig.align='center'
+						boxplot(datos, main="Diagrama de caja para Datos1.txt",
+						col=c("red","blue","yellow","green"))
+						end.rcode-->
+						</p>
+						<p>Los <i>bigotes</i> de cada caja representan el máximo y el mínimo de los valores que toma cada atributo. Las cajas representadas para "Edad" y "Sexo" son muy pequeñas, pues su rango de valores es muy pequeño.</p>
+						<p>Por último, veamos el <i>heatmap</i> asociado a nuestros datos. Esta gráfica solo acepta valores numéricos, por lo que hemos de eliminar la columna "Sexo" que almacena valores <code>char</code>. Lo haremos de manera un poco rudimentaria, pero en el apartado <a href="#library">Función <code>library</code></a> instalaremos un paquete que nos facilitará el trabajo.</p>
+						<p>
+						<!--begin.rcode fig.align='center'
+						array_sin_sexo=c(datos$Edad, datos$Peso, datos$Altura)
+						datos_sin_sexo=matrix(data=array_sin_sexo, ncol=3, byrow=FALSE)
+						heatmap(datos_sin_sexo, scale="column", main="Heatmap de Datos.txt", labCol=c("Edad","Peso","Altura"))
+						end.rcode-->
+						</p>
+						<p>En esta gráfica podemos ver la magnitud de cada valor de las diferentes instancias en función de su intensidad de color. Notar que hemos especificado en los parámetros de la función <code>heatmap</code> que normalice los datos por columnas (<code>scale="column"</code>), pues si no lo hiciéramos la columna de la altura tomaría colores más intensos que el resto de columnas, pues es la que mayores valores toma.</p>
+					</article>
+					<article id="datos2">
+						<h3>Datos2.txt</h3>
+						<p>Hagamos como en el caso anterior, y comencemos viendo qué hay en el dataframe tratado</p>
+						<p>
+						<!--begin.rcode
+						head(datos2,4)
+						summary(datos2)
+						end.rcode-->
+						</p>
+						<p>Volvemos a tener un conjunto de datos sobre altura, peso, sexo y edad, aunque con menos instancias que anteriormente (7 hombres y 7 mujeres) y con un intervalo de edad mayor (de 22 a 42 años). La diferencia más notable con el dataframe anterior es que esta vez incluirá los nombres de cada individuo, aunque realmente esto no nos interesará para la posterior visualización de datos.</p>
+						
+						<p>Una vez más, veamos como se distribuyen nuestros datos con una matriz de gráficas de puntos, así como el histograma de cada atributo (numérico) del dataset.</p>
+						<p>
+						<!--begin.rcode fig.align='center'
+						plot(datos2, col=c("black","red","blue","orange","green"), pch=19)
+						layout(matrix(c(1,1,2,3), 2, 2, byrow = TRUE))
+						hist(datos2$Altura, main="Histograma Altura", xlab="Altura en metros", col="orange")
+						hist(datos2$Peso, main="Histograma Peso", xlab="Peso en kg", col="blue")
+						hist(datos2$Edad, main="Histograma Edad", xlab="Edad", col="green")
+						end.rcode-->
+						</p>
+						<p>La primera fila y la primera columna de la primera gráfica podemos obviarlas, así como los puntos negros que aparecen en el resto de gráficas, pues el nombre de una persona no es determinante en el resto de atributos. Por otra parte, viendo los histogramas, podemos comprobar que aunque el rango de edad sea mayor que en el anterior caso, casi todas las instancias tienen un valor de entre 20 y 30 años. Concretamente, a partir de la matriz de gráficas superior, podemos comprobar que solo hay una persona con más de 40 años.</p>
+						<p>Veamos ahora el diagrama de caja. Ya que en este caso la altura está en metros, multipliquemos todos los valores de altura por 100 para que se pueda visualizar su diagrama de caja.</p>
+						<p>
+						<!--begin.rcode fig.align='center'
+						datos2$Altura=datos2$Altura*100
+						
+						boxplot(datos2, main="Diagrama de caja para Datos2.txt",
+						col=c("black","red","blue","yellow","green"))
+						end.rcode-->
+						</p>
+						<p>Usando el diagrama de caja de la edad podemos ver lo que se comentaba anteriormente; hay un valor atípico (de 42 años, representado por un circulito) en la distribución de edades entre las 14 instancias dadas.</p>
+						<p>Para finalizar esta sección, veamos el heatmap asociado al dataframe <code>datos2</code>, el cuál debe de contener solo las columnas con valores numéricos y tener estos valores normalizados, como en el caso anterior.</p>
+						<p>
+						<!--begin.rcode fig.align='center'
+						array2_sin_sexo=c(datos2$Edad, datos2$Peso, datos2$Altura)
+						datos2_sin_sexo=matrix(data=array2_sin_sexo, ncol=3, byrow=FALSE)
+						heatmap(datos2_sin_sexo, scale="column", main="Heatmap de Datos2.txt", labCol=c("Edad","Peso","Altura"))
+						end.rcode-->
+						</p>
+					</article>
+				</article>
+				
+				<article id="gestion">
+					<h2>Gestión de Objetos</h2>
+					<p>En este apartado trataremos distintos métodos para almacenar y recuperar objetos en y desde ficheros de texto. Para empezar, con la orden <code>dump</code>, guardaremos las variables especificadas del entorno en el que estamos trabajando en un fichero con el nombre que le asignemos. En nuestro caso, guardaremos todas las variables.</p>
+					<p>
+					<!--begin.rcode
+					ls()
+					dump(list=ls(),"./resources/data/dumpdata.R")
+					end.rcode-->
+					</p>
+					<p>Para recuperar estos objetos utilizaremos la orden <code>source</code>, aunque es posible que el modo de los datos numéricos sea modificado. Mediante este procedimiento podremos exportar objetos con la finalidad de enviarlos a R en otro ordenador, aun teniendo otro sistema operativo.</p>
+					<p>Por otra parte, dispondremos de las órdenes <code>dput</code> y <code>dget</code> con las que guardaremos y obtendremos la definición de una variable, pero no su nombre.</p>
+					<p>
+					<!--begin.rcode
+					dput(x=datos2, "./resources/data/dput.R")
+					datos2_copia <- dget("./resources/data/dput.R")
+					datos2_copia
+					end.rcode-->
+					</p>
+					<p>Finalmente, con las órdenes <code>save</code> y <code>load</code> guardaremos y recuperaremos los datos especificados en representación binaria.</p>
+				</article>
+				<article id="library">
+					<h2>Función <code>library</code></h2>
+					<p>Para terminar, hablemos de la función <code>library</code>, que es una función fundamentel para gestionar paquetes en R. Desde el comienzo del desarrollo de esta práctica hemos necesitado utilizar esta orden para poder generar el código R de nuestra página web; para ello hemos utilizado el paquete <code>knitr</code>, el cuál hemos puesto en funcionamiento con <code>library(knitr)</code> (de esto ya hablamos previamente).</p>
+					
+					<p>Para ver una demostración más extensa, vamos a instalar y utilizar el paquete <code>dplyr</code> para gestionar más fácilmente los dataframes tratados con anterioridad. Instalaremos <code>tidyverse</code>, que es un conjunto de librerías para datascience y que podremos usar en el futuro, y que incluye la librería que queremos utilizar. Para ello utilizaremos el código <code>install.packages("tidyverse")</code> (tardará un rato).</p>
+					<p>Una vez instalada, la ponemos en funcionamiento con la orden <code>library</code> y realizamos algún ejemplo.</p>
+					<p>
+					<!--begin.rcode fig.align='center'
+					library(dplyr)
+					
+					# Seleccionamos las columnas numéricas con la función select de dplyr
+					datos2.numeric <- select(datos2, c("Peso","Altura", "Edad"))
+					# Ahora podemos dibujar el heatmap más fácilmente
+					heatmap(data.matrix(datos2.numeric), scale="column")
+					end.rcode-->
+					</p>
+					<p>Con este paquete también podremos pasar un filtro a nuestros datos y solo devolver los que cumplan una condición, por ejemplo, que la altura sea menor a 165 cm o los hombres de más de 23 años.</p>
+					<p>
+					<!--begin.rcode
+					filter(datos2, Altura<165)
+					filter(datos2, Sexo=="M", Edad>23)
+					end.rcode-->
+					</p>
+					<p>Una vez hayamos terminado de utilizar el paquete, podemos quitarlo con la orden <code>detach</code>.</p>
+					<p>
+					<!--begin.rcode
+					detach(package:dplyr)
+					search()
+					end.rcode-->
+				</article>
+				
+				<p style="text-align:center;"><br><br><br><br>FIN</p>
+			</section>
+		</section>
+		
+		
+		
+		<nav>
+			<p><strong>Índice</strong></p>
+			<ul>
+				<li><a href="#introduccion">Introducción</a></li>
+				<li>
+					<details open>
+						<summary><a href="#simulacion">Simulación Extracción</a></summary>
+						<ul>
+							<li><a href="#ases">Ases</a></li>
+							<li><a href="#monedas">Monedas</a></li>
+							<li><a href="#dados">Dados</a></li>
+							<li><a href="#deduccion">Deduccion</a></li>
+						</ul>
+					</details>
+				</li>
+				<li><a href="#3.5.7-3.5.8">Cuadricula; Procesos no Lineales</a></li>
+				<li><a href="#busqueda_entorno">Lista Búsqueda, Entornos</a></li>
+				<li>
+					<details open>
+						<summary><a href="#lectura">Lectura Datos</a></summary>
+						<ul>
+							<li><a href="#datos">Datos1</a></li>
+							<li><a href="#datos2">Datos2</a></li>
+						</ul>
+					</details>
+				</li>
+				<li><a href="#gestion">Gestión Objetos</a></li>
+				<li><a href="#library">Función <code>library</code></a></li>
+			</ul>
+		</nav>
+	
+		<section id="extra">
+			<p><strong>Simón López Vico</strong></p>
+			<p>Universidad de Granada</p>
+			<p>Ingeniería Informática y Matemáticas</p>
+		</section>
+		
+		<footer>
+			<p>Simón López Vico</p>
+			<p>simondelosbros@correo.ugr.es</p>
+		</footer>
+	
+</body>
+
+</html>

@@ -1,0 +1,373 @@
+<!DOCTYPE HTML>
+<html lang="es">
+
+<head>
+	<title>Entrega 4</title>
+	<meta charset="UTF-8"/>
+	<link rel="icon" type="image/png" href="resources/images/icon.png"/>
+	<link rel="stylesheet" type="text/css" href="resources/css/style.css" />
+	<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.0.1/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+		<header>
+			<section id="texto">
+				<h1>Estadística Computacional: <span id="entrega">Entrega 4</span></h1>
+				<h3>Representación Gráfica de Datos</h3>
+			</section>
+			<section id="ugr">
+				<img id="logo_ugr" src="./resources/images/ugr.png" alt="UGR">
+			</section>
+		</header>
+
+		<section id="wrapper">
+			<section id="content">
+				<article>
+					<ol>
+						<li id="ej_1">
+						<p class="pregunta">Busca <code>qunif</code> y <code>dunif</code> y representa las funciones correspondientes para la unifirme entre 0 y 1. <br><code>?Distributions</code> muestra todas las distribuciones que existen en R. Selecciona una y represéntala.<p>
+						<p>Hemos escrito y mejorado la función <code>Dibuja</code> que aparece en el punto 7.1 para que represente la distribución uniforme, \(U(a,b)\). De manera similar desarrollaremos una función para una distribución diferente y representaremos su función de densidad así como la distribución de probabilidad.</p>
+						<p>Hablemos de las funciones que nos pide el ejercicio detenidamente. El método <code>qunif(x,min=0,max=1)</code> nos devolverá la función cuantil, \(P[X\leq x]\), en el intervalo \([\)min, max\(]\) para la distribución uniforme. Por otra parte, la función <code>dunif(x,min=0,max=1)</code> nos devolverá la densidad del valor \(x\) en \(U(a,b)\), donde \(a\) y \(b\) son el mínimo el máximo especificados en los parámetros. En la función desarrollada también utilizaremos <code>punif(x,min=0,max=1)</code>, que devolverá el valor de la función de distribución de probabilidad.</p>
+						<p>Hablemos ahora de la función desarrollada para representar la distribución uniforme. En los parámetros especificaremos el valor de el número de elementos (<code>n</code>), la cantidad que difieren \(a\) y \(b\) (<code>alpha</code>), el mínimo y el máximo de la distribución (<code>mini, maxi</code>), el número de gráficas a representar (<code>fil, col</code>) y si representamos la función de densidad o de distribución de probabilidad (<code>probability=TRUE / FALSE</code>). Dentro de ella comprobaremos que todos estos parámetros están bien especificados y mostraremos, de forma bonita, las gráficas.</p>
+						<p>El enunciado del ejercicio pide que se muestren las funciones en el intervalor \([0,1]\), que es lo que hará la función cuando la ejecutemos sin parámetros. Para ver un funcionamiento más complejo, la ejecutaremos con otros parámetros diferentes.</p>
+						
+						<p>
+						<!--begin.rcode include=FALSE
+						set.seed(12345)
+						end.rcode-->
+						</p>
+						
+						<p>
+						<!--begin.rcode fig.align='center'
+						plotDistribution.Uniform <- function(n=30,alpha=0.001,mini=0,maxi=1,
+						                                     fil=2,col=2,probability=FALSE){
+						   if(n<10)
+						      stop("Hacen falta mas numeros")
+						   
+						   if(maxi<=mini)
+						      stop("El mínimo ha de ser menor que el máximo")
+						   
+						   if(alpha>0.5)
+						      stop("El máximo valor para alpha es 0.5")
+						   
+						   n<-as.integer(n)
+						   a<-qunif(alpha, min=mini, max=maxi)
+						   b<-qunif(1-alpha, min=mini, max=maxi)
+						   colors=c("firebrick1","chartreuse1","cornflowerblue","darkorchid2")
+						   
+						   if(!probability){
+						      par(mfrow=c(fil,col))
+						      for (i in 1:(fil*col)){
+						         x<-seq(a,b,,i*n)
+						         plot(x,dunif(x, min=mini, max=maxi),col=colors[i],
+						              xlim=c(mini,maxi), ylim=c(0, 1.5/(maxi-mini)),
+						              ylab="y", main=paste("n =",  i*n, "", sep=" "), type="o")
+						      }
+						      title(main="Función de densidad\nDistribución Uniforme", line = -22,
+						            outer = TRUE, cex.main=1.8, col.main="gray25")
+						   }else{
+						      par(mfrow=c(fil,col))
+						      for (i in 1:(fil*col)){
+						         x<-seq(a,b,,i*n)
+						         plot(x,punif(x, min=mini, max=maxi),col=colors[i],
+						              main=paste("n =", i*n, "", sep=" "), ylab="y",type="o")
+						      }
+						      title(main="Función Distribución de Probabilidad\nDistribución Uniforme",
+						            line = -23, outer = TRUE, cex.main=1.5, col.main="gray25")
+						   }
+						}
+						end.rcode-->
+						</p>
+						<p>
+						<!--begin.rcode fig.align='center'
+						plotDistribution.Uniform(n=10, alpha=0.1, mini=0, max=50)
+						
+						plotDistribution.Uniform(n=10, alpha=0.1, mini=0, max=50, probability=TRUE)
+						end.rcode-->
+						</p>
+						
+						<p>Entre todas las distribuciones que obtenemos al ejecutar <code>?Distributions</code> nos quedaremos, por ejemplo, con la distribución de Poisson, que representaremos utilizando <code>dpois</code> y <code>ppois</code> (en este caso no necesitaremos <code>qpois</code>. Como parámetros le pasaremos el valor \(\lambda\) de la distribución de Poisson (que se irá doblando en cada gráfica) y \(k\) que representará el número de ocurrencias del evento. Así, escribimos la función para representarla como en el caso anterior y obtenemos:</p>
+						
+						<p>
+						<!--begin.rcode fig.align='center'
+						plotDistribution.Poisson <- function(k=30,lambda=1,
+						                                     fil=2,col=2,probability=FALSE){
+						   if(lambda<=0)
+						      stop("lambda ha de ser positivo")
+						   
+						   colors=c("firebrick1","chartreuse1","cornflowerblue","darkorchid2")
+						   
+						   if(!probability){
+						      par(mfrow=c(fil,col))
+						      for (i in 1:(fil*col)){
+						         x<-seq(0,k)
+						         plot(x,dpois(x, lambda=lambda*2^(i-1)), col=colors[i], xlab="k", type="o",
+						              ylim=c(0,0.4),ylab="P[X=k]", main=paste("lambda =", lambda*2^(i-1),"",sep=" "))
+						      }
+						      title(main="Función de densidad\nDistribución de Poisson", line = -22,
+						            outer = TRUE, cex.main=1.8, col.main="gray25")
+						   }else{
+						      par(mfrow=c(fil,col))
+						      for (i in 1:(fil*col)){
+						         x<-seq(0,30)
+						         plot(x,ppois(x, lambda=lambda*2^(i-1)),col=colors[i], type="o",
+						              main=paste("lambda =", lambda*2^(i-1), "", sep=" "), ylab="y", xlab="k")
+						      }
+						      title(main="Función Distribución de Probabilidad\nDistribución de Poisson",
+						            line = -23, outer = TRUE, cex.main=1.5, col.main="gray25")
+						   }
+						}
+						end.rcode-->						
+						</p>
+						<p>
+						<!--begin.rcode fig.align='center'
+						plotDistribution.Poisson()
+						plotDistribution.Poisson(probability=TRUE)
+						end.rcode-->
+						</p>
+						
+						<p>Con este formato de función podremos generar una representación para cada distribución, <code>plotDistribution.NOMBRE</code>, haciendo ligeros cambios en función de los párametros que admita la distribución elegida.</p>
+						
+						</li>
+						
+						
+						
+						
+						<li id="ej_2">
+						<p class="pregunta">Haz una estadística descriptiva con unos datos de tu elección, que incluya <code>summary</code>, <code>hist</code>, <code>boxplot</code>, <code>stem</code>, <code>mean</code>, <code>variance</code>, <code>median</code>, ...</p>
+						<p>Al igual que en la entrega anterior, utilicemos el paquete <code>datasets</code> para escoger el conjunto de datos sobre el que realizar nuestra estadística descriptiva. Optaremos por los datos almacenados en <code>USAccDeaths</code>, que contendrán información sobre el número de muertes en accidentes por mes en Estados Unidos en una serie de años.</p>
+						<p>
+						<!--begin.rcode
+						library(datasets)
+						USAccDeaths
+						
+						# Es un dataframe?
+						is.data.frame(USAccDeaths)
+						
+						# Es un time series?
+						is.ts(USAccDeaths)
+						end.rcode-->
+						</p>
+						<p>Podemos ver que este conjunto de datos no está almacenado en un <code>dataframe</code>, que es lo que nos facilita la realización de una estadística descriptiva; está guardado como <code>ts</code>, <i>time series</i>. Por tanto, nos encargaremos de transformarlo en un <code>dataframe</code> y así agilizar nuestro trabajo.</p>
+						<p>
+						<!--begin.rcode
+						datos<-as.data.frame(matrix(USAccDeaths,nrow=6,ncol=12))
+						colnames(datos) <- c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")
+						rownames(datos) <- c("1973","1974","1975","1976","1977","1978")
+						
+						# Es un dataframe?
+						is.data.frame(datos)
+						
+						end.rcode-->
+						</p>
+						
+						<p>Una vez tenemos un estructura de datos de tipo <code>dataframe</code>, podemos empezar la estadística descriptiva. Primero veremos un resumen con valores mínimos y máximos, medias, etcétera, en función de los meses y en función de los años.</p>
+						
+						<p>
+						<!--begin.rcode
+						# Resumen en función de los meses
+						summary(datos)
+						# Si transponemos la matrix de datos, tenemos el resumen en función de los años
+						summary(t(as.matrix(datos)))
+						end.rcode-->
+						</p>
+						
+						<p>Podemos ver que de media, entre los 6 años dados, el mes con menos muertes es julio, y el que más febrero. Aún así el valor mínimo y máximo de accidentes mortales corresponde a noviembre y febrero, respectivamente. Por otra parte, viendo el resumen en función de los años, el año con menos muertes de media es 1975 y con más muertes 1973.
+						
+						<p>Una vez vistos estos valores en función de los meses y de los años, veamos sobre el total del conjunto de datos cuál es la media, la matriz de covarianzas, etc.</p>
+						<p>
+						<!--begin.rcode
+						mean(as.matrix(datos))
+						
+						var(as.matrix(datos))
+						var(t(as.matrix(datos)))
+						
+						quantile(as.matrix(datos))
+						end.rcode-->
+						</p>
+						<p>En este caso, la media asociada al conjunto de datos completo se obtiene calculando la media entre todas las medias de cada una de las variables. La matriz de covarianzas representa la covarianza que hay entre dos variables, y los valores de la diagonal representarán la varianza de cada una de las variables.</p>
+						
+						<p>Veamos ahora, a través de un histograma, qué valores de accidentes se dan con más frecuencia.</p>
+						<p>
+						<!--begin.rcode fig.align='center'
+						hist(x=as.matrix(datos), main="Histograma USAccDeaths", breaks=10, col="red",
+						xlab="Número Accidentes", ylab="Frecuencia", density=50)
+						end.rcode-->
+						</p>
+						
+						<p><i>Notar que el histograma es exactamente el mismo independientemente de si lo ponemos en función de los meses o de los años.</i></p>
+						
+						<p>Mediante este histograma comprobamos que la frecuencia más común de accidentes durante todos los años de los que disponemos está en torno a 8000-8500 casos. Para finalizar el trabajo con los histogramas, realicemos uno para cada año.</p>
+						
+						<p>
+						<!--begin.rcode include=FALSE
+						library(dplyr)
+						end.rcode-->
+						</p>
+						
+						<p>
+						<!--begin.rcode fig.align='center'
+						colores=rainbow(6)
+						par(mfrow=c(3,2))
+						
+						for(i in 1:6){
+						   hist(x=as.matrix(slice(datos, index=i)), main=paste("Histograma", 1972+i), breaks=10,
+						        col=colores[i], xlab="Número Accidentes", ylab="Frecuencia", density=50,
+						        xlim=c(7500,11500),ylim=c(0,4))
+						}
+						
+						end.rcode-->
+						</p>
+						
+						<p>Pasemos ahora a los diagramas de caja. Realizaremos uno en función de los meses y otro en función de los años, para ver así la extensión de los datos en cada intervalo de tiempo.</p>
+						<p>
+						<!--begin.rcode fig.align='center'
+						par(mfrow=c(2,1))
+						boxplot(x=as.matrix(datos),col=rainbow(12), main="Diagrama de caja en función de los meses")
+						boxplot(x=t(as.matrix(datos)),col=rainbow(6), main="Diagrama de caja en función de los años")
+						end.rcode-->
+						</p>
+						
+						<p>En estos diagramas vemos lo que ya habíamos mostrado al utilizar la función <code>summary</code>: los cuartiles, la media y los valores máximos y mínimos. Respecto a los valores atípicos, representados por un punto solitario fuera del diagrama de caja, solo tendremos uno, que se dará en 1978 con un gran número de accidentes.</p>
+						
+						<p>Con estas gráficas también podemos ver lo comentado anteriormente: el mes con más accidentes fue febrero, y el año más cástigado 1973.</p>
+						<p>Utilicemos ahora el método <code>stem</code> para calcular un diagrama de tallos y hojas. Esta representación presentará nuestros datos cuantitativos en un formato gráfico, similar a un histograma, para ayudar a visualizar la forma de nuestra distribución.</p>
+						
+						<p>
+						<!--begin.rcode fig.align='center'
+						plot.new()
+						tmp <- capture.output(stem(as.matrix(datos)))
+						tmp[1]<-"The decimal point is 3 digit(s)"
+						tmp[2]<-"to the right of the |"
+
+						text(0,1,paste(tmp, collapse='\n'), adj=c(0,1), family='mono',cex=1.5)
+						end.rcode-->
+						</p>
+						
+						<p>Para finalizar el ejercicio, veamos una estimación no paramétrica de la función de densidad del conjunto de datos utilizando el método <code>density</code>, representándolo sobre nuestro histograma.</p>
+						
+						<p>
+						<!--begin.rcode fig.align='center'
+						hist(x=as.matrix(datos), main="Función de densidad", breaks=10, col="red",
+						xlab="Número Accidentes", ylab="Densidad", density=50, prob=T)
+						lines(density(as.matrix(datos)),lwd=4)
+						end.rcode-->
+						</p>
+						
+						<p>Así, vemos que nuestro conjunto de datos tiene una distribución similar a una normal centrada en 9000, aproximadamente.</p>					
+						
+						</li>
+						
+						<li id="ej_3">
+						<p class="pregunta">Estudia la definición de <code>t.test</code> y aplícala en casos de una y dos muestras.</p>
+						<p>La función <code>t.test</code> se encarga de realizar prueba T de Student, que es cualquier prueba en la que el estadístico tomado tenga una distribución de T de Student si la hipótesis nula es cierta. Esta prueba se utiliza comúnmente para determinar si las medias de dos distribuciones son iguales entre sí. Concretamente, el método <code>t.test</code> realizará pruebas de t de Studentde una y dos muestras sobre los vectores de datos que le pasemos.</p>
+						
+						<p>Comencemos utilizando esta función con el fin de comprobar las hipótesis sobre la media de una población de la que extraemos una muestra. La población sobre la que vamos a trabajar es la normal, y extraeremos varios valores con la función <code>rnorm</code>, 	que nos proporciona valores aleatorios sobre la distribución normal.</p>
+
+						
+						<p>
+						<!--begin.rcode
+						muestra <- rnorm(n=10)
+						t.test(muestra)
+						end.rcode-->
+						</p>
+						
+						<p>Vemos que el test funciona medianamente bien aún teniendo tan pocos valores, pues la media real de la distribución es \(\mu=0\) y la obtenida para la muestra es \(\overline X=-0.1329441\), con un intervalo al 95% de confianza \([-0.7149982, 0.4491099]\). Cuantos más datos tomemos para <code>rnorm</code>, más se acercará la media inferenciada a la media real de la distribución, como vemos a continuación</p>
+						<p>
+						<!--begin.rcode
+						muestra <- rnorm(n=100000)
+						t.test(muestra)$estimate
+						end.rcode-->
+						</p>
+						
+						<p>De la misma manera, hagamos ahora una prueba t de Student con dos muestras tomadas sobre la normal. Nuestro cometido en este caso es determinar si se cumple la hipótesis de que las medias son iguales en las dos distribuciones de las que se han tomado las muestras (\(\mu_1-\mu_2=0\)).</p>
+						<p>
+						<!--begin.rcode
+						muestra_1<-rnorm(n=10)
+						muestra_2<-rnorm(n=10)
+						t.test(muestra_1,muestra_2)					
+						end.rcode-->
+						</p>
+						<p>Podemos ver que se estiman unas medias similares para las dos muestras, pero el intervalo de confianza para la diferencia de las medias es muy grande, debido al pequeño número de elementos de cada población que se han tomado. Además el p-value vale 0.7839, un valor muy superior al 0.05 del umbral, por lo que podemos	rechazar la hipótesis de que difieran las medias, que es la que se toma como hipótesis principal en esta función <code>t.test</code>.</p>
+						<p>De la misma manera que en el caso de una muestra, si tomamos muchos más elementos para las dos poblaciones podríamos asegurar con más precisión nuestras hipótesis. También podemos hacer este proceso a la inversa, comprobando si las medias de las poblaciones son diferentes:</p>
+						<p>
+						<!--begin.rcode
+						t.test(rnorm(n=10,mean=-1), rnorm(n=10,mean=1))
+						end.rcode-->
+						</p>
+						
+						<p>Ya que el p-value=0.00162 es menor que 0.05, podemos afirmar que las muestras difieren en su media, es decir, los dos variables son diferentes.</p>
+						
+						</li>
+						
+						<li id="ej_4">
+						<p class="pregunta">Haz un caso de regresión lineal con datos que tú elijas.</p>
+						<p>Para este ejercicio usaremos el conjunto de datos <code>cars</code> que vimos en la entrega anterior, el cuál relaciona la velocidad de un coche con su distancia de frenado. Utilizaremos la regresión lineal para idenfiticar la recta óptima que atraviese la nube de puntos formada por los datos de nuestro conjunto de datos.</p>
+						<p>Para generar un modelo de regresión lineal hemos de utilizar la función <code>lm</code>, a la que habremos de pasarle un conjunto de datos sobre el que trabajar y un parámetro <code>formula</code> que contendrá una descripción simbólica del modelo a ajustar, en nuestro caso distancia-velocidad. </p>						
+						
+						<p>
+						<!--begin.rcode fig.align='center'
+						plot(cars, pch=19, col="green", main="Relación velocidad-distancia
+						y ajuste mediante regresión lineal", xlab="Velocidad", ylab="Distancia frenado")
+						modelo <- lm(formula=dist ~ speed, data=cars)
+						abline(modelo, col="red") 
+						end.rcode-->
+						</p>
+						
+						<p>Podemos ver que la recta ajustada, dibujada en rojo, se encuentra en la mitad de los datos, siendo una recta óptima sobre la nube de puntos.</p>
+						<p>Al igual que con los <code>dataframes</code>, podemos ver un <i>resumen</i> del modelo que se ha generado con el ajuste de regresión lineal utilizando la función <code>summary</code>:</p>
+						
+						<p>
+						<!--begin.rcode
+						summary(modelo)
+						end.rcode-->
+						</p>
+						
+						<p>Vayamos por partes:
+							<ul>
+								<li class="normal"><code>residuals</code> contiene los residuos del modelo, es decir, la diferencia entre el ajuste realizado y los valores reales. Podemos ver que la mediana de los residuos es -2.272, que no es un valor muy grande, pero su máximo y mínimo son elevados, al haber <i>outliers</i>, como por ejemplo el punto de arriba a la derecha en la gráfica, que está alejado del resto de valores.</li>
+								<li class="normal"><code>coefficientes</code> representa los coeficientes del modelo de regresión lineal que hemos ajustado, los valores de la pendiente y el punto de corte con el eje \(y\) que tendrá la recta del estilo \(mx+n\). Además, tendremos el error de estos coeficientes junto a otros valores.</li>
+								<li class="normal">En la siguiente línea tendremos el <code>residual standard error</code>, que cuanto más se acerque a 0 significa que más perfecto es nuestro ajuste (¡cuidado con el sobreajuste!) y los grados de libertad, 48, que representa la cantidad de información pasada al modelo para el ajuste.</li>
+								<li class="normal">Para finalizar tendremos ciertos valores estadísticos que representarán información sobre la calidad de nuestro ajuste, pero no será relevante un estudio tan profundo de este ejemplo de regresión lineal.</li>
+							</ul>
+						</p>
+						
+						<p>La regresión lineal es un modelo de predicción muy utilizado en aprendizaje automático y ajuste de datos, siendo además la base de otros algoritmos más potentes, como por ejemplo ciertos tipos de redes neuronales.</p>
+						</li>
+						
+					</ol>
+				
+				</article>
+				
+				<p style="text-align:center;"><br><br><br><br>FIN</p>
+				
+			</section>
+		</section>
+		
+		
+		
+		<nav>
+			<p><strong>Índice</strong></p>
+			<ul>
+				<li><a href="#ej_1">Ejercicio 1</a></li>
+				<li><a href="#ej_2">Ejercicio 2</a></li>
+				<li><a href="#ej_3">Ejercicio 3</a></li>
+				<li><a href="#ej_4">Ejercicio 4</a></li>
+			</ul>
+		</nav>
+	
+		<section id="extra">
+			<p><strong>Simón López Vico</strong></p>
+			<p>Universidad de Granada</p>
+			<p>Ingeniería Informática y Matemáticas</p>
+		</section>
+		
+		<footer>
+			<p>Simón López Vico</p>
+			<p>simondelosbros@correo.ugr.es</p>
+		</footer>
+	
+</body>
+
+</html>

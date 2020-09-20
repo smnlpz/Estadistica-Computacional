@@ -1,0 +1,564 @@
+<!DOCTYPE HTML>
+<html lang="es">
+
+<head>
+	<title>Entrega Final</title>
+	<meta charset="UTF-8"/>
+	<link rel="icon" type="image/png" href="resources/images/icon.png"/>
+	<link rel="stylesheet" type="text/css" href="resources/css/style.css" />
+	<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.0.1/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+		<header>
+			<section id="texto">
+				<h1>Estadística Computacional: <span id="entrega">Entrega Final</span></h1>
+				<h3>Trabajo opcional para aspirar a la mejor nota</h3>
+			</section>
+			<section id="ugr">
+				<img id="logo_ugr" src="./resources/images/ugr.png" alt="UGR">
+			</section>
+		</header>
+
+		<section id="wrapper">
+			<section id="content">
+				<article>
+					<h2>Compromiso de originalidad</h2>
+					<p>D. Simón López Vico, con DNI 26504148Y, declaro que el presente Trabajo de Fin de Asignatura es original, no habiéndose utilizado fuente sin ser citadas debidamente. De no cumplir con este compromiso, soy consciente de que, de acuerdo con la Normativa de Evaluación y de Calificación de los estudiantes de la Universidad de Granada de 20 de mayo de 2013, esto conllevará automáticamente la calificación numérica de cero [...] independientemente del resto de las calificaciones que el estudiante hubiera obtenido. Esta consecuencia debe entenderse sin perjuicio de las responsabilidades disciplinarias en las que pudieran incurrir los estudiantes que plagie.</p>
+					<p>
+					Para que conste así lo firmo el 14 de junio de 2020.
+					</p>
+				</article>
+				<article>
+					<h2>Introducción</h2>
+					<p>En esta entrega nos dedicaremos a resolver una serie de ejercicios propuestos por el profesor mediante el uso de R y los libros que incluye en su instalación inicial, así como la herramienta <code>knitr</code> con la que ejecutaremos y mostraremos código en un fichero html. Al final de este fichero html se incluirá una sección <i>Conclusiones</i> donde se comentarán los resultados obtenidos.</p>
+					<p>La plantilla utilizada para realizar nuestro trabajo la podemos encontrar en <a href="https://www.free-css.com/free-css-layouts/page1/css-layout-1" style="color:red;" target="_blank">este</a> sitio web, aunque se han realizado bastantes cambios sobre ella para obtener una mejor presentación y un aspecto más agradable a la vista.</p>
+					<p>Por otra parte, antes de ponernos a resolver los ejercicios, fijaremos una semilla para obtener siempre los mismos resultados pseudo-aleatorios en caso de que alguno de los ejercicios requiera de algún método aleatorio.</p>
+					
+					<p>
+					<!--begin.rcode
+					set.seed(12345)
+					end.rcode-->
+				</article>
+				
+				<article>
+					<h2>Ejercicios</h2>
+					<ol>
+						<li id="ej_1">
+						<p class="pregunta">Considera en el plano el recinto cerrado finito definido por las funciones \(y=x^2\) y \(100 x=y^2\) al cual pertenece el punto de coordenadas \((2,12)\). Realiza un gráfico del mismo.</p>
+						<p>Para empezar, tenemos que determinar los puntos de corte entre las dos funciones, que los obtendremos igualándola la una a la otra:</p>
+						<p style="text-align:center;">\(x^2=\sqrt{100x}\)</p>
+						<p>Podríamos obtener el valor de \(x\) para el que se cumple esta ecuación utilizando alguna biblioteca externa, pero en esta entrega solo podemos utilizar las funciones que tenemos en la instalación inicial de R, por lo que resolveremos a mano y obtendremos que las dos funciones se cortan en:</p>
+						<p style="text-align:center;">\(x=0, \; \; \; \; \; \; x=10^{2/3}\)</p>
+						<p>Con todo esto, pintemos la región finita cerrada formada por las dos funciones junto al punto interior dado en el enunciado.</p>
+						<p>
+						<!--begin.rcode fig.align='center', warning=F
+						f1 <- function(x){       x^2       }
+						f2 <- function(x){   sqrt(100*x)   }
+						
+						interseccion_1 = 0
+						interseccion_2 = 10^(2/3)
+						
+						# Dibujamos las dos funciones
+						t <- seq(interseccion_1,interseccion_2, by=0.1)
+						plot(x=t, y=f1(t), type='l', col="blue", main="Recinto cerrado finito definido
+						por las funciones dadas", xlab="x", ylab="y", lwd = 3)
+						lines(x=t, y=f2(t), col="green", lwd = 3)
+						
+						# Sombreamos el área que encierran
+						minimo <- pmin(f1(t),f2(t))
+						maximo <- pmax(f1(t),f2(t))
+						polygon(c(t, rev(t)), c(maximo ,rev(minimo)), col = "grey", density=40)
+						
+						# Dibujamos el punto (2,12) dentro del recinto
+						points(x=2, y=12, pch=19, col="red")
+						
+						# Ahora, añadimos el texto
+						text(x=0.5, y=17.5, col=c("blue","green"), cex=1.5,
+						     labels=c("x²\n", expression(sqrt(100*x))))
+						text(x=2.3,y=12,labels="(2,12)", col="red")
+						
+						end.rcode-->
+						</p>
+						<p>Para no repetir tanto código en adelante, hagamos una función para dibujar el recinto cerrado formado.</p>
+						<p>
+						<!--begin.rcode
+						plot_functions <- function(x_ini=interseccion_1, x_fin=interseccion_2, add=FALSE){
+						   # Dibujamos las dos funciones
+						   t <- seq(x_ini,x_fin, by=0.1)
+						   
+						   if(add)   lines(x=t, y=f1(t), col="blue", lwd = 3)
+						   else      plot(x=t, y=f1(t), type='l', col="blue", xlab="x", ylab="y", lwd = 3)
+						   
+						   lines(x=t, y=f2(t), col="green", lwd = 3)
+						
+						   # Sombreamos el área que encierran
+						   minimo <- pmin(f1(t),f2(t))
+						   maximo <- pmax(f1(t),f2(t))
+						   polygon(c(t, rev(t)), c(maximo ,rev(minimo)), col = "grey", density=40)
+						}
+						end.rcode-->
+						</p>
+						
+						</li>
+						
+						
+						<li id="ej_2">
+						<p class="pregunta">Construye una función que indique si un punto cualquiera del plano pertenece al interior de ese recinto, al borde o al exterior. Comprueba que \((2,12)\) es interior. Aplícala a los puntos \((0,0)\), \((-1,-1)\) y \((30,30)\) y comenta los resultados.</p>
+						<p>Dado un punto cualquiera, \((x,y)\), se encontrará dentro de la región o en el borde si \(f_1(x)\leq y\) y \(f_2(x)\geq y\), siendo \(f_1(x)=x^2\) la función que delimita la parte inferior de la región y \(f_2(x)=\sqrt{100x}\) la que delimita la parte superior. Dicho esto, procedamos a escribir nuestra función, que devolverá una lista con información que nos será útil para el ejercicio 4.</p>
+						
+						<p>
+						<!--begin.rcode
+						posicionPunto <- function(x,y,mostrar=TRUE){
+						   if(!is.nan(f1(x)) && !is.nan(f2(x))){
+						      value.min=f1(x)
+						      value.max=f2(x)
+						      if(value.min<y  && value.max>y ){
+						         if(mostrar)   print("El punto está dentro del recinto")
+						         return(list(Dentro=TRUE, Pos="Dentro"))
+						      }
+						      if(value.min>y  || value.max<y ){
+						         if(mostrar)   print("El punto está fuera del recinto")
+						         return(list(Dentro=FALSE, Pos="Fuera"))
+						      }
+						      if(value.min==y || value.max==y){
+						         if(mostrar)   print("El punto está en el borde del recinto")
+						         return(list(Dentro=TRUE, Pos="Borde"))
+						      }
+						   }else{
+						      if(mostrar)   print("El punto está fuera del recinto")
+						      return(list(Dentro=FALSE, Pos="Fuera"))
+						   }
+						}
+						end.rcode-->
+						</p>
+						
+						<p>Veamos ahora su correcto funcionamiento con los puntos dados en el enunciado.</p>
+						<p>
+						<!--begin.rcode warning=F
+						posicionPunto(2,12)
+						posicionPunto(0,0)
+						posicionPunto(-1,1)
+						posicionPunto(30,30)
+						posicionPunto(3,20)
+						end.rcode-->
+						</p>
+						
+						<p>Para comprobar que la función ha hecho su trabajo y ha funcionado correctamente, mostraremos los puntos junto al recinto en una gráfica.</p>
+						<p>
+						<!--begin.rcode fig.align='center', warning=F
+						# Añadimos los puntos estudiados
+						plot(x=c(2,0,-1,3), y=c(12,0,1,20), pch=19, col=c("red","black","purple","brown"),
+						     xlab="x", ylab="y", xlim=c(-1,5), ylim=c(0,25), cex=1.5)
+						
+						# Dibujamos las funciones
+						plot_functions(add=T)
+						end.rcode-->
+						</p>
+						
+						<p>Por último, notemos que se puede transformar este método fácilmente para hacer que sea válido para cualesquiera dos funciones que le pasemos por parámetro (aunque realmente lo que se está comprobando es si el punto se encuentra entre las dos funciones o no).</p>
+						<p>
+						<!--begin.rcode
+						posicionPunto.2 <- function(x,y,fun1,fun2,mostrar=TRUE){
+						   if(!is.nan(fun1(x)) && !is.nan(fun2(x))){
+						      # Tomamos el valor minimo y maximo entre las dos funciones en x
+						      # para comprobar si nuestro valor y está entre estos dos valores
+						      value.min=pmin(fun1(x), fun2(x))
+						      value.max=pmax(fun1(x), fun2(x))
+						      
+						      if(value.min<y  && value.max>y ){
+						         if(mostrar)   print("El punto está dentro del recinto")
+						         return(list(Dentro=TRUE, Pos="Dentro"))
+						      }
+						      if(value.min>y  || value.max<y ){
+						         if(mostrar)   print("El punto está fuera del recinto")
+						         return(list(Dentro=FALSE, Pos="Fuera"))
+						      }
+						      if(value.min==y || value.max==y){
+						         if(mostrar)   print("El punto está en el borde del recinto")
+						         return(list(Dentro=TRUE, Pos="Borde"))
+						      }
+						   }else{
+						      if(mostrar)   print("El punto está fuera del recinto")
+						      return(list(Dentro=FALSE, Pos="Fuera"))
+						   }
+						}
+						
+						
+						posicionPunto.2(x=2,y=12,fun1=f1,fun2=f2)
+						# Si le pasamos las funciones del revés también funciona
+						posicionPunto.2(x=2,y=12,fun1=f2,fun2=f1)
+						end.rcode-->
+						</p>
+						
+						
+						</li>
+						
+						
+						<li id="ej_3">
+						<p class="pregunta">Construye una función que seleccione un valor, que llamamos \(A\), de una distribución uniforme en el intervalo (-1/100,1/100), y otro, que llamamos \(B\), de una distribución normal de media 0 y varianza 1/100. Añade \((A,B)\) al punto \((2,12)\) y obtendrás un punto que llamaremos \(P_0\).</p>
+						<p>Para este ejercicio usaremos los métodos <code>runif</code> y <code>rnorm</code>, teniendo en cuenta que la varianza dada es 1/100, pero la función <code>rnorm</code> para obtener el valor de la distribución normal solo admite como parámetro la desviación típica, <code>sd</code>, que valdrá 0.1. Así, escribimos la función que será bastante simple.</p>
+						<p>
+						<!--begin.rcode
+						ejer_3 <- function(){
+							A=runif(n=1, min=-1/100, max=1/100)
+							B=rnorm(n=1, mean=0, sd=0.1)
+							
+							return(c(A, B))
+						}
+						
+						P_0 <- c(2,12) + ejer_3()
+						P_0
+						end.rcode-->
+						</p>
+						</li>
+						
+						
+						<li id="ej_4">
+						<p class="pregunta">Considera el recorrido aleatorio con barrera absorbente definido del siguiente modo: sea un punto que en el tiempo \(t=0\) comienza en el origen, \(P_0\) del apartado anterior, y se desplaza del siguiente modo:</p>
+							<ol>
+								<li class="normal">En cada tiempo \(t\), \(t=1,2, \ldots\), se lanza un dado dos veces y una moneda dos veces.</li>
+								<li class="normal">Si la suma de puntos de los dados es superior a \(5\), la coordenada \(x\) del punto se modifica para que aumente \(5\) centésimas, si no, disminuye \(5\) centésimas.</li>
+								<li class="normal">Si las dos monedas son cara, la coordenada \(y\) del punto se modifica para que aumente \(5\) centésimas, si las dos son cruz, permanece inalterable y si no, disminuye \(5\) centésimas.</li>
+								<li class="normal">A continuación el punto salta hasta sus nuevas coordenadas</li>
+								<li class="normal">El proceso finaliza si, tras el salto, el punto alcanza el perímetro de la región o el exterior de la misma</li>
+							</ol>
+						<p class="pregunta">Escribe una función que simule el movimiento del punto y devuelva, para un número máximo, \(M\), de pasos:</p>
+							<ol>
+								<li class="normal">La progresión aleatoria definida</li>
+								<li class="normal">Cuantos pasos han sido necesarios para llegar al límite o NA si no lo consigue</li>
+							</ol>
+						
+						<p>En la entrega 2 escribimos varias funciones para simular sucesos aleatorios, como para lanzar una moneda o un dado. Utilizaremos estas funciones desarrolladas para la entrega 2, pero un poco modificadas para el cometido del ejercicio a resolver.</p>
+						
+						<p>
+						<!--begin.rcode
+						lanzarDado <- function(tiradas=2){
+						   obtenidos=array()
+						   for(i in 1:tiradas){
+						      obtenidos[i]=sample(6, 1)
+						   }
+						   
+						   obtenidos
+						}
+						
+						lanzarMoneda <- function(tiradas=2){
+						   nombres_resultados=c("Cara","Cruz")
+						   obtenidos=array()
+						   
+						   for(i in 1:tiradas){
+						      lanzo = sample(2, 1)
+						      obtenidos[i]=nombres_resultados[lanzo]
+						   }
+						   
+						   obtenidos
+						}
+						
+						end.rcode-->
+						</p>
+						
+						<p>Con estas funciones definidas, ya solo tendremos que ir siguiendo los pasos descritos en el enunciado para escribir la función deseada.</p>
+						<p>
+						<!--begin.rcode
+						ejer_4 <- function(ini=P_0, max_pasos=100, stop=TRUE){
+						   progresion=array(dim = c(max_pasos,2))
+						   n_pasos=NA
+						   for(i in 1:max_pasos){
+						      resDado=lanzarDado()
+						      if(resDado[1]+resDado[2] > 5)   ini[1]=ini[1]+0.05
+						      else                            ini[1]=ini[1]-0.05
+						      
+						      resMoneda=lanzarMoneda()
+						      if(resMoneda[1]=="Cara" && resMoneda[2]=="Cara")      ini[2]=ini[2]+0.05
+						      else if(resMoneda[1]=="Cruz" && resMoneda[2]=="Cruz") ini[2]=ini[2]
+						      else                                                  ini[2]=ini[2]-0.05
+						      
+						      progresion[i,1]=ini[1]
+						      progresion[i,2]=ini[2]
+						      
+						      pos_punto=posicionPunto(ini[1],ini[2],mostrar=FALSE)
+						      if(is.na(n_pasos) && (pos_punto$Dentro==FALSE || pos_punto$Pos=="Borde")){
+						         if(stop) return(list(Progresion=progresion[1:i,1:2], nPasos=i))
+						         else     n_pasos=i
+						      }
+						   }
+						   
+						   return(list(Progresion=progresion, nPasos=n_pasos))
+						}
+						end.rcode-->
+						</p>
+						
+						<p>El parámetro <code>stop</code>, con valor <code>TRUE</code> por defecto, lo hemos añadido para que cuando valga <code>FALSE</code> la función siga ejecutándose aún habiendo salido del recinto cerrado, ya que en los siguientes ejercicios se pide un valor de \(M\) muy grande pero saldremos de la región mucho antes de alcanzarlo.</p>
+						
+						<p>Veamos qué tal funciona el método programado:</p>
+						<p>
+						<!--begin.rcode
+						puntos=ejer_4()
+						puntos
+						ejer_4(max_pasos=10)
+						
+						end.rcode-->
+						</p>
+						
+						<p>Para comprobar que todo ha ido bien, dibujemos la serie de puntos que se han ido generando sobre la región formada por las funciones, dándole un color distinto a cada punto para diferenciarlos bien.</p>
+						<p>
+						<!--begin.rcode fig.align='center', warning=FALSE
+						# Obtenemos la secuencia de puntos
+						puntos=puntos$Progresion
+						
+						# Pintamos los puntos y el punto inicial
+						plot(x=puntos[,1], y=puntos[,2], col=rainbow(dim(puntos)[1]),
+						     xlim=c(min(puntos[,1])*0.75,max(puntos[,1])*1.2), xlab="x",
+						     ylim=c(min(puntos[,2])*0.75,max(puntos[,2])*1.2), ylab="y")
+						points(x=P_0[1], y=P_0[2], pch=19, cex=1.5)
+						
+						# Dibujamos las funciones
+						plot_functions(add=TRUE)
+						end.rcode-->
+						</p>
+						
+						</li>
+						
+						
+						<li id="ej_5">
+						<p class="pregunta">Realiza una simulación concreta del proceso con \(M=10000\) y represéntala gráficamente (mediante líneas) sobre la gráfica de la región.</p>
+						<p>Para este ejercicio utilizaremos el parámetro <code>stop</code> comentado anteriormente, ya que, como veremos al ejecutar el código, el punto sale del recinto cerrado mucho antes de llegar a \(M=10000\).</p>
+						<p>
+						<!--begin.rcode fig.align='center'
+						# Obtenemos la secuencia de puntos especificando que
+						# no pare de ejecutarse aún saliendo de la región
+						puntos=ejer_4(max_pasos=10000, stop=FALSE)
+						
+						# Vemos que aunque haya 10000 iteraciones, se sale del
+						# recinto mucho antes de llegar hasta ese número
+						puntos$nPasos
+						
+						plot(x=puntos$Progresion[,1], y=puntos$Progresion[,2], type='l',
+						     xlab="x", ylab="y", ylim=c(-110,20))
+						plot_functions(add=TRUE)
+						
+						text(x=40,y=17.5,labels="Recinto cerrado finito", col="red")
+						text(x=140,y=-30,labels="Progresión aleatoria de puntos", col="black")
+						end.rcode-->
+						</p>
+						
+						<p>Vemos que el movimiento del punto tiende a crecer en \(x\) y a decrecer en \(y\), algo que es de esperar ya que, según las reglas definidas para el movimiento en el ejercicio 4, es más probable que la suma de los dados sea mayor que 5, y por tanto se sume 0.05 a \(x\), y es más probable que se obtenga cara y cruz o cruz y cara al tirar la moneda dos veces, restándole así 0.05 a \(y\).</p> 
+						</li>
+						
+						
+						<li id="ej_6">
+						<p class="pregunta">Realiza esta misma representación gráfica centrada en el punto de salida y con una anchura y altura de 2 unidades.</p>
+						<p>Para centrar en el punto de salida, \(P_0\), realizaremos un <code>plot</code> del punto e iremos añadiendo el resto de elementos a la gráfica generada. También representaremos el punto en el que salimos por primera vez del recinto cerrado finito.</p>
+						<p>
+						<!--begin.rcode fig.align='center'
+						plot(x=P_0[1], y=P_0[2], pch=19, col="red",
+						     xlim=c(P_0[1]-2,P_0[1]+2), ylim=c(P_0[2]-2,P_0[2]+2), xlab="x", ylab="y")
+						plot_functions(add=TRUE)
+						lines(x=c(P_0[1],puntos$Progresion[,1]), y=c(P_0[2],puntos$Progresion[,2]))
+						points(x=puntos$Progresion[puntos$nPasos,1], y=puntos$Progresion[puntos$nPasos,2], pch=19)
+						end.rcode-->
+						</p>
+						
+						</li>
+						
+						
+						<li id="ej_7">
+						<p class="pregunta">Realiza cuatro simulaciones concretas del proceso con \(M=6000\) y represéntalas gráficamente sobre la gráfica de la región utilizando colores distintos para cada una.</p>
+						<p>Simplemente, repitamos lo mismo que en el ejercicio 5 pero utilizando la función <code>rainbow(4)</code> que nos devolverá 4 colores distintos para representar el movimiento de cada una de las simulaciones.</p>
+						<p>
+						<!--begin.rcode
+						sim_1 = ejer_4(max_pasos=6000, stop=FALSE)
+						sim_2 = ejer_4(max_pasos=6000, stop=FALSE)
+						sim_3 = ejer_4(max_pasos=6000, stop=FALSE)
+						sim_4 = ejer_4(max_pasos=6000, stop=FALSE)
+						
+						# Veamos cuantos pasos han necesitado cada uno
+						pasosNecesitados=c(sim_1$nPasos,sim_2$nPasos,sim_3$nPasos,sim_4$nPasos)
+						pasosNecesitados
+						
+						colores=rainbow(4)
+						plot(x=sim_1$Progresion[,1], y=sim_1$Progresion[,2], type='l',
+						     xlab="x", ylab="y", col=colores[1], ylim=c(-70,20))
+						lines(x=sim_2$Progresion[,1], y=sim_2$Progresion[,2], col=colores[2])
+						lines(x=sim_3$Progresion[,1], y=sim_3$Progresion[,2], col=colores[3])
+						lines(x=sim_4$Progresion[,1], y=sim_4$Progresion[,2], col=colores[4])
+						plot_functions(add=TRUE)
+						text(x=120, y=17, col=colores, cex=1.5,
+						     labels=c("sim_1", "\n\nsim_2", "\n\n\n\nsim_3", "\n\n\n\n\n\nsim_4"))
+						end.rcode-->
+						</p>
+						
+						<p>Para ver mejor este resultado, hagamos zoom sobre la región en la que se encuentra el punto \(P_0\) como hemos hecho en el ejercicio anterior y dibujemos el punto en el que se sale por primera vez de la región para cada simulación (con un circulito negro).</p>
+						
+						<p>
+						<!--begin.rcode fig.align='center'
+						plot(x=P_0[1], y=P_0[2], pch=19, col="red",
+						       xlim=c(P_0[1]-2,P_0[1]+2), ylim=c(P_0[2]-2,P_0[2]+2), xlab="x", ylab="y")
+						
+						plot_functions(add=TRUE)
+						
+						lines(x=c(P_0[1],sim_1$Progresion[,1]), y=c(P_0[2],sim_1$Progresion[,2]), col=colores[1])
+						points(x=sim_1$Progresion[sim_1$nPasos,1], y=sim_1$Progresion[sim_1$nPasos,2], pch=19)
+						
+						lines(x=c(P_0[1],sim_2$Progresion[,1]), y=c(P_0[2],sim_2$Progresion[,2]), col=colores[2])
+						points(x=sim_2$Progresion[sim_2$nPasos,1], y=sim_2$Progresion[sim_2$nPasos,2], pch=19)
+						
+						lines(x=c(P_0[1],sim_3$Progresion[,1]), y=c(P_0[2],sim_3$Progresion[,2]), col=colores[3])
+						points(x=sim_3$Progresion[sim_3$nPasos,1], y=sim_3$Progresion[sim_3$nPasos,2], pch=19)
+						
+						lines(x=c(P_0[1],sim_4$Progresion[,1]), y=c(P_0[2],sim_4$Progresion[,2]), col=colores[4])
+						points(x=sim_4$Progresion[sim_4$nPasos,1], y=sim_4$Progresion[sim_4$nPasos,2], pch=19)
+						
+						text(x=0.25, y=14, col=colores, cex=1.5,
+						     labels=c("sim_1", "\n\nsim_2", "\n\n\n\nsim_3", "\n\n\n\n\n\nsim_4"))
+						end.rcode-->
+						</p>
+						
+						</li>
+						
+						
+						<li id="ej_8">
+						<p class="pregunta">Escribe una función con un argumento que permita repetir un número de veces, \(n\), este proceso y devuelva un vector con el número de pasos necesarios para salir del recinto en cada repetición.</p>
+						<p>La función a desarrollar recorrerá un bucle <code>for</code> y en cada iteración ejecutará el método <code>ejer_4</code> y añadirá el número de pasos obtenido a un array que se devolverá al terminar el bucle. Lo vemos a continuación:</p>
+						
+						<p>
+						<!--begin.rcode
+						ejer_8 <- function(n=10, M=100){
+						   vectorPasos=array()
+						   for(i in 1:n)
+						      vectorPasos[i]=ejer_4(max_pasos=M)$nPasos
+						   vectorPasos
+						}
+						
+						ejer_8()
+						end.rcode-->
+						</p>
+						
+						<p>Utilizando los parámetros por defecto obtenemos un resultado menor a el máximo \(M=100\), salvo en un caso que tomará un número mayor de pasos a \(M\) (la posición 6 del vector de resultados, con el valor <code>NA</code>).</p>
+						
+						</li>
+						
+						
+						<li id="ej_9">
+						<p class="pregunta">Analiza el vector que se obtiene con la función anterior para \(n=1000\) y \(M=3000\) y comenta cómo es la distribución del parámetro <i>pasos necesarios para llegar al límite</i> en este proceso. ¿Es \(M\) suficientemente grande? A la luz de lo obtenido, indica razonadamente si habría que usar un valor mayor o no, y en caso afirmativo, repítelo alterando el valor de \(M\).</p>
+						<p>Comencemos ejecutando la función anterior con los parámetros <code>n=1000,M=3000</code> y veamos algunos de sus valores, así como un resumen de los resultados obtenidos.</p>
+						<p>
+						<!--begin.rcode fig.align='center'
+						solucion=ejer_8(n=1000,M=3000)
+						solucion[1:15]
+						
+						summary(solucion)
+						end.rcode-->
+						</p>
+						
+						<p>En estas mil llamadas a la función <code>ejer_4</code>, el máximo número de pasos a dar para salir del recinto finito es 165, siendo así un valor muy lejano al máximo de pasos impuesto por el enunciado, \(M=3000\). Por otra parte, vemos que en uno de los casos se ha conseguido salir del recinto en tan solo 30 iteraciones de la simulación, suponiendo que ha salido por el borde izquierdo del recinto (que está más cerca del punto \(P_0\)). Aún así, la media es de 62.59 pasos ya que la probabilidad de salir por el borde izquierdo del recinto (\(x\) decrece) es menor que la de salir por el borde derecho (\(x\) crece), y el borde derecho está más lejos del punto \(P_0\).</p>
+						
+						<p>Veamos ahora un histograma del número de pasos necesarios para llegar al límite, para así poder estudiar la frecuencia del número de pasos y discernir sobre un valor más óptime de \(M\).</p>
+						
+						<p>
+						<!--begin.rcode fig.align='center'
+						hist(x=solucion, main="Histograma simulación n=1000, M=3000", xlim=c(25,175),
+						     xlab="nPasos", ylab="Frecuencia", col="red", density=50)
+						end.rcode-->
+						</p>
+						
+						<p>Podemos ver que los valores más repetidos de <code>nPasos</code> se encuentran en torno a 50-60 (frecuencia\(\approx\)300), es decir, en solo 50-60 pasos se sale del recinto cerrado. Este valor, así como el comportamiento del histograma, concuerda muy bien con los resultados obtenidos anteriormente con la función <code>summary</code>. También podemos hacer que los intervalos para los que se comprueba la frecuencia sean más pequeños, obteniendo así más información sobre la solución obtenida:</p>
+						
+						<p>
+						<!--begin.rcode fig.align='center'
+						hist(x=solucion, main="Histograma simulación n=1000, M=3000", xlim=c(25,175),
+						     xlab="nPasos", ylab="Frecuencia", col="red", density=50, breaks=50)
+						end.rcode-->
+						</p>
+						
+						<p>Con estos dos histogramas anteriores podemos ver que hay varios <i>outlier</i> con un valor de <code>nPasos</code> alto, es decir, varias observaciones que son numéricamente distante del resto de los datos, tomando valores de <code>nPasos</code> mayores a 150.</p>
+						<p>A continuación, veamos la función de densidad que sigue la distribución de la solución, utilizando el método <code>density</code> y pintando la función de densidad inferida sobre el histograma de nuestra solución.</p>
+						
+						<p>
+						<!--begin.rcode fig.align='center'
+						hist(x=solucion, main="Función de densidad de la simulación", col="red",
+						     xlab="nPasos", ylab="Densidad", density=25, prob=T, xlim=c(25,175))
+						lines(density(solucion),lwd=3, col="darkred")
+						end.rcode-->
+						</p>
+						
+						<p>Mirando detenidamente esta fución de densidad, nos da la sensación de que se parece a una distribución normal. ¿Será esto así? Dibujemos la función de densidad obtenida junto a una distribución normal con la misma media y desviación típica que nuestra solución.</p>
+						
+						<p>
+						<!--begin.rcode fig.align='center'
+						mean(solucion)
+						sd(solucion)
+						
+						
+						plot(density(solucion), type="l", col="darkred", lwd=2, xlab="x", ylab="y",
+						     main="Comparativa fuciones de densidad")
+						     
+						norm_values=20:175
+						lines(x=norm_values, y=dnorm(x=norm_values, mean=mean(solucion), sd=sd(solucion)),
+						      col="darkgreen", lwd=2)
+						
+						text(x=150, y=0.028, col=c("darkgreen"), cex=1.5,
+						     labels=expression(paste( "N(", mu, ",", sigma,")")))
+						text(x=150, y=0.026, col=c("darkred"), cex=1.5, labels="Densidad solución")
+						end.rcode-->
+						</p>
+						
+						<p>Vemos que casan muy bien las dos funciones, por lo que podríamos decir que la distribución de los pasos necesarios para llegar al límite es la de una normal \(N(\mu=62.592,\sigma=14.84614)\).</p>
+						
+						<p>Respecto al resto de preguntas del enunciado, \(M\) es suficientemente grande, y podríamos disminuir bastante este parámetro, pues no son necesarias tantas iteraciones. Aún así, es mejor mantener este valor ya que la función <code>ejer_4</code> deja de ejecutarse y devuelve el resultado cada vez que sale del recinto (si el parámetro <code>stop</code> está puesto a <code>TRUE</code>), por lo que nunca <code>nPasos</code> llegará a \(M\); si lo redujeramos podríamos obtener valores <code>NA</code>, que no podríamos representar en el histograma, haciendo que nuestra muestra de \(n\) simulaciones tuviera valores inservibles. Es decir, es buena idea coger un valor de \(M\) lo suficientemente grande para que obtengamos un resultado válido de <code>nPasos</code> en cada simulación de las \(n\) a realizar.</p>
+						
+						<p>Como no es necesario usar un valor mayor de \(M\), no repetiremos el proceso alterando su valor.</code>
+						
+						</li>
+						
+						
+					</ol>
+				</article>
+				
+				<article id="conclusiones">
+					<h2>Conclusiones</h2>
+					<p>Este apartado lo he entendido de dos maneras: conclusiones sobre el trabajo realizado y conclusiones sobre el lenguaje R y la asignatura. Vayamos por partes.</p>
+					<p>Respecto al trabajo que hemos realizado, concluimos que el recinto cerrado finito generado por las dos funciones dadas es pequeño si tenemos en cuenta los valores que se suman o restan (0.05) al punto \(P_0\), pues en muy pocas iteraciones del bucle de la función <code>ejer_4</code> salimos del recinto. Por otra parte, todo el trabajo realizado se puede extrapolar a cualquiera otras dos funciones que se intersequen formando un recinto cerrado finito, pues los métodos desarrollados permiten que modifiquemos las funciones utilizadas, obteniendo resultados igualmente válidos, como vimos en la función <code>posicionPunto.2</code>.</p>
+					<p>Para finalizar, respecto a las conclusiones sacadas del lenguaje R, me parece una herramienta super completa, con una gran versatilidad para resolver problemas matemáticos en distintas situaciones. Además, es un lenguaje muy potente a la hora de realizar análisis de datos y big data. En el pasado he utilizado python para estos análisis, pero este lenguaje me ha gustado más y realmente me parece más óptimo y rápido. Además, con tan solo la instalación base de R hemos podido realizar este trabajo al completo, y por tanto añadiendo nuevas bibliotecas podremos extender los análisis a realizar. Y, respecto a la asignatura, me parece una muy buena optativa a elegir en el grado de Matemáticas para soltarse con la programación y el análisis de datos, así como una buena oportunidad para aprender R siendo del grado de Informática.</p>
+				</article>
+				
+				<p style="text-align:center;"><br><br><br><br>FIN</p>
+				
+			</section>
+		</section>
+		
+		
+		
+		<nav>
+			<p><strong>Índice</strong></p>
+			<ul>
+				<li><a href="#ej_1">Ejercicio 1</a></li>
+				<li><a href="#ej_2">Ejercicio 2</a></li>
+				<li><a href="#ej_3">Ejercicio 3</a></li>
+				<li><a href="#ej_4">Ejercicio 4</a></li>
+				<li><a href="#ej_5">Ejercicio 5</a></li>
+				<li><a href="#ej_6">Ejercicio 6</a></li>
+				<li><a href="#ej_7">Ejercicio 7</a></li>
+				<li><a href="#ej_8">Ejercicio 8</a></li>
+				<li><a href="#ej_9">Ejercicio 9</a></li>
+			</ul>
+			<ul style="list-style-type:circle;">
+				<li><a href="#conclusiones">Conclusiones</a></li>
+			<ul>
+		</nav>
+	
+		<section id="extra">
+			<p><strong>Simón López Vico</strong></p>
+			<p>Universidad de Granada</p>
+			<p>Ingeniería Informática y Matemáticas</p>
+		</section>
+		
+		<footer>
+			<p>Simón López Vico</p>
+			<p>simondelosbros@correo.ugr.es</p>
+		</footer>
+	
+</body>
+
+</html>
